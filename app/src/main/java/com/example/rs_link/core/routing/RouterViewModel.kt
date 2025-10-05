@@ -1,0 +1,43 @@
+package com.example.rs_link.core.routing
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+sealed class Destination {
+    object Loading : Destination()
+    object Onboarding : Destination()
+    object SignIn : Destination()
+    object Dashboard : Destination()
+}
+
+@HiltViewModel
+class RouterViewModel @Inject constructor() : ViewModel() {
+    private val _destination = MutableStateFlow<Destination>(Destination.Loading)
+    val destination: StateFlow<Destination> = _destination
+
+    init {
+        determineInitialDestination()
+    }
+
+    private fun determineInitialDestination() {
+        viewModelScope.launch {
+            // OPTIONAL: Add a minimum delay to ensure branding is visible
+            delay(500)
+
+            val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding()
+            val isLoggedIn = authRepository.isLoggedIn()
+
+            _destination.value = when {
+                !hasSeenOnboarding -> Destination.Onboarding
+                !isLoggedIn -> Destination.SignIn
+                else -> Destination.Dashboard
+            }
+        }
+    }
+}
