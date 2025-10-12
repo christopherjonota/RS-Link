@@ -2,6 +2,7 @@ package com.example.rs_link.core.routing
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rs_link.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,10 @@ sealed class Destination {
 }
 
 @HiltViewModel
-class RouterViewModel @Inject constructor() : ViewModel() {
+class RouterViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val userPrefsRepository: UserPrefsRepository
+) : ViewModel() {
     private val _destination = MutableStateFlow<Destination>(Destination.Loading)
     val destination: StateFlow<Destination> = _destination
 

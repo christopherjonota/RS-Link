@@ -1,17 +1,17 @@
 package com.example.rs_link.core.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AuthModule {
+object NetworkModule {
+    @Provides
     @Singleton
-    @Binds
-    abstract fun bindAuthRepository(
-        aut
-    )
+    fun provideRetrofit(): RetroFit{
+
+    }
 }
