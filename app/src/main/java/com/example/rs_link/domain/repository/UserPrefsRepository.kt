@@ -11,6 +11,6 @@ interface UserPrefsRepository {
     suspend fun setOnboardingComplete(isComplete: Boolean)
 
     // Light And Dark Mode Preference
-    fun getThemeMode(): Flow<String>
-    suspend fun setThemeMode(mode: String)
+//    fun getThemeMode(): Flow<String>
+//    suspend fun setThemeMode(mode: String)
 }

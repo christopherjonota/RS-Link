@@ -31,12 +31,15 @@ class RouterViewModel @Inject constructor(
 
     private fun determineInitialDestination() {
         viewModelScope.launch {
+            // brief delay to hold the splash screen
             // OPTIONAL: Add a minimum delay to ensure branding is visible
             delay(500)
 
+            // 2. Fetch required states from repositories
             val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding()
             val isLoggedIn = authRepository.isLoggedIn()
 
+            // 3. Implement priority routing logic
             _destination.value = when {
                 !hasSeenOnboarding -> Destination.Onboarding
                 !isLoggedIn -> Destination.SignIn
