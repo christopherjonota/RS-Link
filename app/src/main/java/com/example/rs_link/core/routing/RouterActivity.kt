@@ -10,6 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import android.content.Intent
+import com.example.rs_link.feature_dashboard.DashboardActivity
+import com.example.rs_link.feature_onboarding.OnboardingActivity
+import com.example.rs_link.feature_signin.SignInActivity
 
 @AndroidEntryPoint // Used for hilt injection
 class RouterActivity : ComponentActivity() {
@@ -18,9 +21,11 @@ class RouterActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        // Install the Splash Screen BEFORE super.onCreate()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        // This is crucial: holds the splash screen until routing is done
         splashScreen.setKeepOnScreenCondition {
             viewModel.destination.value == Destination.Loading
         }

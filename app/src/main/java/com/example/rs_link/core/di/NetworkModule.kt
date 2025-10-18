@@ -9,9 +9,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    @Provides
-    @Singleton
-    fun provideRetrofit(): RetroFit{
-
-    }
+//    @Provides
+//    @Singleton
+//    fun provideRetrofit(): RetroFit{
+//
+//    }
 }

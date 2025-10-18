@@ -9,6 +9,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 sealed class Destination {
@@ -37,8 +38,8 @@ class RouterViewModel @Inject constructor(
             delay(500)
 
             // 2. Fetch required states from repositories
-            val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding()
-            val isLoggedIn = authRepository.isLoggedIn()
+            val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding().first()
+            val isLoggedIn = authRepository.isLoggedIn().first()
 
             // 3. Implement priority routing logic
             _destination.value = when {
@@ -49,3 +50,5 @@ class RouterViewModel @Inject constructor(
         }
     }
 }
+
+

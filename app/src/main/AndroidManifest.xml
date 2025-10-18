@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- The application tag starts the definition of your app -->
     <application
+        android:name="com.example.rs_link.Application"
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,21 +15,43 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RSLink"
         tools:targetApi="31" >
+
+        <!--
+       1. ROUTER ACTIVITY (The Launcher and Gatekeeper)
+       - It must have the MAIN action and LAUNCHER category.
+       - It uses the Theme.SplashScreen to manage the launch screen look.
+       - android:noHistory="true" is recommended so the user cannot navigate back to it.
+       -->
+        <activity
+            android:name=".core.routing.RouterActivity"
+            android:exported="true"
+            android:label="@string/title_activity_router"
+            android:theme="@style/Theme.RSLink"
+            android:noHistory="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!--
+        2. FEATURE ACTIVITIES (The Destinations)
+        - These are declared so the OS knows they exist and can be launched by the RouterActivity.
+        - They use the main application theme.
+        -->
         <activity
             android:name=".feature_onboarding.OnboardingActivity"
             android:exported="false"
             android:theme="@style/Theme.RSLink" />
         <activity
-            android:name=".feature_dashboard.ui.DashboardActivity"
+            android:name=".feature_dashboard.DashboardActivity"
             android:exported="false" />
         <activity
             android:name=".feature_signin.SignInActivity"
             android:exported="false" />
-        <activity
-            android:name=".core.routing.RouterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_router"
-            android:theme="@style/Theme.RSLink" />
+
     </application>
 
 </manifest>

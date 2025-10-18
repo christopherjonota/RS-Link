@@ -7,4 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".feature_onboarding.OnboardingActivity">
 
+    <FrameLayout
+        android:layout_width="409dp"
+        android:layout_height="116dp"
+        android:background="#F45F5F"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
+
+        <EditText
+            android:id="@+id/editTextText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Onboarding" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
