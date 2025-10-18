@@ -3,6 +3,7 @@ package com.example.rs_link.core.routing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rs_link.domain.repository.AuthRepository
+import com.example.rs_link.domain.repository.UserPrefsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

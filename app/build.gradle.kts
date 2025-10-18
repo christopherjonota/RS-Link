@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.rs_link"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.rs_link"
@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
@@ -57,6 +58,10 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.foundation.layout.android)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
