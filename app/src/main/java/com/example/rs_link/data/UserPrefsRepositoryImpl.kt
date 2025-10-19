@@ -12,8 +12,10 @@ import javax.inject.Singleton
 @Singleton
 class UserPrefsRepositoryImpl @Inject constructor(
     private val  localDataSource: UserPrefsLocalDataSource // This data source will be injected here
-) : UserPrefsRepository {
+) : UserPrefsRepository { // <- This is the contract that implements the function inside the repository
 
+
+    // These are delegation that passes the request to the injected datasource to be managed by the UserPrefsLocalDataSourceImpl
     override fun hasSeenOnboarding(): Flow<Boolean> =
         localDataSource.hasSeenOnboarding()
 

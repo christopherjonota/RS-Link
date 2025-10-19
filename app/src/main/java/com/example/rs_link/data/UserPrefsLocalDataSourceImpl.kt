@@ -16,9 +16,9 @@ import javax.inject.Singleton
 @Singleton
 class UserPrefsLocalDataSourceImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
-) : UserPrefsLocalDataSource{
+) : UserPrefsLocalDataSource{ // This will be the contract that will be implemented
 
-    // Preference Keys
+    // Preference Keys used to save and retrieve values
     private companion object{
         val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_complete")
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
@@ -27,21 +27,26 @@ class UserPrefsLocalDataSourceImpl @Inject constructor(
         const val DEFAULT_THEME = "System"
     }
 
+    // These will return a live stream of data and once read will extract the value
     override fun hasSeenOnboarding(): Flow<Boolean> = dataStore.data
         .map{ preferences ->
-            preferences[ONBOARDING_COMPLETED_KEY] ?: false
+            preferences[ONBOARDING_COMPLETED_KEY] ?: false // If the file is empty, it return as false
     }
 
-    override fun getThemeMode(): Flow<String> = dataStore.data.map {
-        preferences -> preferences[THEME_MODE_KEY] ?: DEFAULT_THEME
+    override fun getThemeMode(): Flow<String> = dataStore.data
+        .map { preferences ->
+            preferences[THEME_MODE_KEY] ?: DEFAULT_THEME // If the user never selected a theme, it will use the default
     }
 
     override fun isLoggedin(): Flow<Boolean> {
         TODO("Not yet implemented")
     }
 
+
+
     // --- WRITE OPERATIONS (Suspend functions for safe background writing) ---
 
+    // takes the input and will work on the background thread and updates the file
     override suspend fun setOnboardingComplete(isComplete: Boolean) {
         dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETED_KEY] = isComplete

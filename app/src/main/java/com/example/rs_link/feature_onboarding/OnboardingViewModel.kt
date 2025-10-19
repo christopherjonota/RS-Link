@@ -15,24 +15,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val userPrefsRepository : UserPrefsRepository
+    private val userPrefsRepository : UserPrefsRepository // injects the instance into this
 ) : ViewModel() {
 
-    // 1. Page State: Tracks the current page (e.g., for HorizontalPager)
-    private val _currentPage = MutableStateFlow(0)
-    val currentPage: StateFlow<Int> = _currentPage.asStateFlow()
-
     // 2. Event Channel: Used to send one-time events back to the Activity (CRITICAL)
-    private val _onboardingEvent = Channel<OnboardingEvent>()
-    val onboardingEvent = _onboardingEvent.receiveAsFlow()
+    private val _onboardingEvent = Channel<OnboardingEvent>() // used for sending events that should be consumed once
+    val onboardingEvent = _onboardingEvent.receiveAsFlow() // collected by the onboarding activity and navigates once changed
 
-    fun onPageChanged(page: Int) {
-        _currentPage.value = page
-    }
-
-    /**
-     * Called when the user presses the "Get Started" button on the final slide.
-     */
+     // Called when the user presses the "Get Started" button on the final slides
     fun completeOnboarding() {
         viewModelScope.launch {
             // Save the state to DataStore/Prefs (via the repository)
@@ -42,7 +32,6 @@ class OnboardingViewModel @Inject constructor(
             _onboardingEvent.send(OnboardingEvent.NavigateToNextStep)
         }
     }
-
 }
 // Sealed class for one-time events
 sealed class OnboardingEvent {
