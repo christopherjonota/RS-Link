@@ -73,4 +73,6 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.retroFit) // Check for the latest version
+
+    implementation(libs.androidx.datastore)
 }

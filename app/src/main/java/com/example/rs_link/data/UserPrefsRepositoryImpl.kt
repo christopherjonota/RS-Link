@@ -1,6 +1,7 @@
 package com.example.rs_link.data
 
-import com.example.rs_link.data.local.UserPrefsDataSource
+import com.example.rs_link.data.local.UserPrefsLocalDataSource
+import com.example.rs_link.domain.repository.AuthRepository
 import com.example.rs_link.domain.repository.UserPrefsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,15 +12,21 @@ import javax.inject.Singleton
 // Mock: Implements the UserPrefsRepository contract for the data layer.
 @Singleton
 class UserPrefsRepositoryImpl @Inject constructor(
-    private val dataSource: UserPrefsDataSource // This data source will be injected here
+    private val  localDataSource: UserPrefsLocalDataSource // This data source will be injected here
 ) : UserPrefsRepository {
 
-    // Start as false to force the Router to go to OnboardingActivity first
-    private val _hasSeenOnboarding = MutableStateFlow(false)
-
-    override fun hasSeenOnboarding(): Flow<Boolean> = _hasSeenOnboarding.asStateFlow()
+    override fun hasSeenOnboarding(): Flow<Boolean> =
+        localDataSource.hasSeenOnboarding()
 
     override suspend fun setOnboardingComplete(isComplete: Boolean) {
-        _hasSeenOnboarding.value = isComplete
+        localDataSource.setOnboardingComplete(isComplete)
     }
+
+    override fun getThemeMode(): Flow<String> =
+        localDataSource.getThemeMode()
+
+    override suspend fun setThemeMode(mode: String) {
+        localDataSource.setThemeMode(mode)
+    }
+
 }

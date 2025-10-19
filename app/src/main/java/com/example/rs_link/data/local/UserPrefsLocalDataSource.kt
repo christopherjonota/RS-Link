@@ -1,10 +1,8 @@
 package com.example.rs_link.data.local
 
-import android.preference.Preference
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-interface UserPrefsDataSource{
+interface UserPrefsLocalDataSource{
 
     // onboarding status
     fun hasSeenOnboarding(): Flow<Boolean>
