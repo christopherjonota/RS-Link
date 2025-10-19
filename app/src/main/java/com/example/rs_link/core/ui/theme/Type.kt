@@ -16,6 +16,10 @@ import com.example.rs_link.R
 
 // Create the Typography object based on the Material 3 type scale
 val AppTypography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontSize = 57.sp
+    ),
     // Customizing the standard headline for a heavier, larger look
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default, // Use your custom font or FontFamily.Default
