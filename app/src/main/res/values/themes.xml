@@ -1,21 +1,42 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.RSLink" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
+
+    <!--
+    1. MAIN APPLICATION THEME (Theme.RouterApp)
+    This is the theme used by the feature activities (Onboarding, Sign In, Dashboard).
+    Using Material3.DayNight.NoActionBar is standard for Compose apps.
+    -->
+    <style name="Theme.RouterApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your theme here, incorporating your existing colors -->
         <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+
+        <!-- Set the default window background for a clean transition -->
+        <item name="android:windowBackground">?attr/colorSurface</item>
     </style>
-  <!-- Base application theme. -->
-    <style name="Base.Theme.RSLink" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+
+    <!--
+    2. SPLASH SCREEN THEME (Theme.App.Starting)
+    This theme is applied to the RouterActivity in the AndroidManifest.
+    It handles the splash screen appearance and transition.
+    -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Mandatory: Set the solid color background for the splash screen window -->
+        <item name="android:windowBackground">@color/primary</item>
+
+        <!-- Mandatory: Set the icon for the splash screen -->
+        <!-- Create a Vector Drawable named 'splash_icon' in your drawable folder -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+
+        <!-- Optional: Animation time-out (in milliseconds) -->
+        <item name="windowSplashScreenAnimationDuration">500</item>
+
+        <!-- CRITICAL: Define the theme the app switches to AFTER the splash screen finishes -->
+        <item name="postSplashScreenTheme">@style/Theme.RouterApp</item>
     </style>
 </resources>
