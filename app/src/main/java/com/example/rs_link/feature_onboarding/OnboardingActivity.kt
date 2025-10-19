@@ -18,6 +18,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.widget.ThemeUtils
 import androidx.compose.material3.MaterialTheme
+import com.example.rs_link.core.ui.theme.ThemeRSLink
 import com.example.rs_link.feature_signin.SignInActivity
 
 @AndroidEntryPoint
@@ -38,11 +39,10 @@ class OnboardingActivity : ComponentActivity() {
                 }
             }
         }
-        setContent {
-            // IMPORTANT: You must wrap your content with your main app theme
-            // Example: YourAppNameTheme {
-            OnboardingScreen(viewModel = viewModel)
-            // }
+        setContent { // displays the ui
+            ThemeRSLink {
+                OnboardingScreen(viewModel = viewModel)
+            }
         }
     }
 

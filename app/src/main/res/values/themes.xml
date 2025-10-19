@@ -37,6 +37,6 @@
         <item name="windowSplashScreenAnimationDuration">500</item>
 
         <!-- CRITICAL: Define the theme the app switches to AFTER the splash screen finishes -->
-        <item name="postSplashScreenTheme">@style/Theme.RouterApp</item>
+        <item name="postSplashScreenTheme">@style/Theme.RSLink</item>
     </style>
 </resources>
