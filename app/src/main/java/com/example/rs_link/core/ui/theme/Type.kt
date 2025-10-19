@@ -2,21 +2,23 @@
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.rs_link.R
 
 // Define your custom font family if you use one (optional)
-val CustomFont = FontFamily(
-    // e.g., Font(R.font.roboto_regular, FontWeight.Normal),
-    // e.g., Font(R.font.roboto_bold, FontWeight.Bold)
-)
+//val CustomFont = FontFamily(
+//    //Font(R.font.roboto_regular, FontWeight.Normal),
+//    // e.g., Font(R.font.roboto_bold, FontWeight.Bold)
+//)
 
 // Create the Typography object based on the Material 3 type scale
 val AppTypography = Typography(
     // Customizing the standard headline for a heavier, larger look
     headlineLarge = TextStyle(
-        fontFamily = CustomFont, // Use your custom font or FontFamily.Default
+        fontFamily = FontFamily.Default, // Use your custom font or FontFamily.Default
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
@@ -24,7 +26,7 @@ val AppTypography = Typography(
     ),
     // Customizing the body text
     bodyLarge = TextStyle(
-        fontFamily = CustomFont,
+        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
@@ -32,7 +34,7 @@ val AppTypography = Typography(
     ),
     // You can customize any other style, like titleMedium, labelSmall, etc.
     titleMedium = TextStyle(
-        fontFamily = CustomFont,
+        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp
     )

@@ -33,7 +33,7 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.primary)
     ) {
 
         // 1. Main Pager Area
