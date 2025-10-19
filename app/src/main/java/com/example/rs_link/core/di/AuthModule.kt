@@ -1,7 +1,7 @@
 package com.example.rs_link.core.di
 
-import com.example.rs_link.data.repository.AuthRepositoryImpl
-import com.example.rs_link.data.repository.UserPrefsRepositoryImpl
+import com.example.rs_link.data.AuthRepositoryImpl
+import com.example.rs_link.data.UserPrefsRepositoryImpl
 import com.example.rs_link.domain.repository.AuthRepository
 import com.example.rs_link.domain.repository.UserPrefsRepository
 import dagger.Binds

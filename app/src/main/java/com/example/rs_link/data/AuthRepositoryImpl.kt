@@ -1,4 +1,4 @@
-package com.example.rs_link.data.repository
+package com.example.rs_link.data
 
 import com.example.rs_link.domain.model.Credentials
 import com.example.rs_link.domain.model.User

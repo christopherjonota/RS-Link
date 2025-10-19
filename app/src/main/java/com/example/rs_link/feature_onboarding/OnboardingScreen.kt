@@ -24,6 +24,7 @@ val slides = listOf(
     OnboardingSlide("Ready to Go!", "Complete the sign-in step to unlock the dashboard.")
 )
 
+
 @Composable
 fun OnboardingScreen(viewModel: OnboardingViewModel) {
     val coroutineScope = rememberCoroutineScope()
@@ -84,7 +85,11 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                colors = ButtonDefaults.buttonColors(
+                  containerColor = MaterialTheme.colorScheme.secondary
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Text(if (isLastPage) "Get Started!" else "Next")
             }
@@ -113,24 +118,4 @@ fun SlideContent(slide: OnboardingSlide) {
         Spacer(Modifier.height(16.dp))
         Text(slide.description, style = MaterialTheme.typography.bodyLarge)
     }
-}
-
-
-// ----------------------------------------------------
-// THE PREVIEW FUNCTION STARTS HERE
-// ----------------------------------------------------
-
-@Preview(showBackground = true) // This annotation tells the IDE to render this function
-@Composable
-fun SlideContentPreview() {
-    // IMPORTANT: You must wrap your content in your app's main theme
-    // to see the correct colors, fonts, and shapes.
-    // Example: YourAppNameTheme {
-    SlideContent(
-        slide = OnboardingSlide(
-            title = "Collaborate Safely",
-            description = "Secure messaging and private group creation features."
-        )
-    )
-    // }
 }
