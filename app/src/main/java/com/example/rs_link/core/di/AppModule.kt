@@ -33,6 +33,7 @@ abstract class AppModule {
     abstract fun bindAuthRepository(
         authRepositoryImpl: AuthRepositoryImpl
     ): AuthRepository
+
     @Binds
     @Singleton
     abstract fun bindUserPrefsRepository(
@@ -45,12 +46,11 @@ abstract class AppModule {
         userPrefsLocalDataSourceImpl: UserPrefsLocalDataSourceImpl
     ): UserPrefsLocalDataSource
 }
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
-
     // --- PROVIDERS (Tells Hilt how to construct the complex objects) ---
-
     @Provides
     @Singleton
     fun providePreferenceDataStore(
