@@ -12,8 +12,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+// Defines the different module routes
 sealed class Destination {
-    object Loading : Destination()
+    object Loading : Destination()  // for initial state, representing the splash screen
     object Onboarding : Destination()
     object SignIn : Destination()
     object Dashboard : Destination()
@@ -21,31 +22,34 @@ sealed class Destination {
 
 @HiltViewModel
 class RouterViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val userPrefsRepository: UserPrefsRepository
+    private val authRepository: AuthRepository, // used to check if the user is currently logged in
+    private val userPrefsRepository: UserPrefsRepository // used to check if the user is already done in onboarding
 ) : ViewModel() {
+
+    // Holds the current destination that is initialized to loading
     private val _destination = MutableStateFlow<Destination>(Destination.Loading)
+
+    // Exposes the current destination
     val destination: StateFlow<Destination> = _destination
 
     init {
-        determineInitialDestination()
+        determineInitialDestination() // created to start the routing process
     }
 
     private fun determineInitialDestination() {
         viewModelScope.launch {
-            // brief delay to hold the splash screen
-            // OPTIONAL: Add a minimum delay to ensure branding is visible
+            // delay to hold the splash screen
             delay(500)
 
-            // 2. Fetch required states from repositories
+            // Fetch required states from repositories
             val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding().first()
             val isLoggedIn = authRepository.isLoggedIn().first()
 
-            // 3. Implement priority routing logic
+            // Implement priority routing logic
             _destination.value = when {
-                !hasSeenOnboarding -> Destination.Onboarding
-                !isLoggedIn -> Destination.SignIn
-                else -> Destination.Dashboard
+                !hasSeenOnboarding -> Destination.Onboarding // redirect to the onboarding if not seen yet
+                !isLoggedIn -> Destination.SignIn   // redirect to sign in page if not signed in yet
+                else -> Destination.Dashboard // redirect to the dashboard if the other 2 is met
             }
         }
     }

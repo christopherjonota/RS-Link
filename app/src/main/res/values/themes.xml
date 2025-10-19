@@ -5,7 +5,7 @@
     This is the theme used by the feature activities (Onboarding, Sign In, Dashboard).
     Using Material3.DayNight.NoActionBar is standard for Compose apps.
     -->
-    <style name="Theme.RouterApp" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.RSLink" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your theme here, incorporating your existing colors -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorOnPrimary">@color/white</item>

@@ -17,7 +17,7 @@ import com.example.rs_link.feature_signin.SignInActivity
 @AndroidEntryPoint // Used for hilt injection
 class RouterActivity : ComponentActivity() {
 
-    private val viewModel: RouterViewModel by viewModels()
+    private val viewModel: RouterViewModel by viewModels() // gets the instance of the viewmodel
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -25,11 +25,12 @@ class RouterActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // This is crucial: holds the splash screen until routing is done
+        // This holds the splash screen until routing is done
         splashScreen.setKeepOnScreenCondition {
             viewModel.destination.value == Destination.Loading
         }
-        // 5. Observe the destination StateFlow and navigate
+
+        // Observe the destination StateFlow and navigate
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.destination.collect { destination ->
@@ -48,10 +49,7 @@ class RouterActivity : ComponentActivity() {
         val intent = Intent(this, activityClass)
         startActivity(intent)
 
-        // CRITICAL: Remove the RouterActivity from the back stack immediately
+        // Remove this activity to the back stack that prevents the user from pressing the back button
         finish()
     }
-
-    // 7. No need for setContentView(R.layout.activity_router) or any layout file
-    // The UI is managed entirely by the Splash Screen API.
 }
