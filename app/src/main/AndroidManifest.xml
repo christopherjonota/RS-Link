@@ -25,7 +25,7 @@
         <activity
             android:name=".core.routing.RouterActivity"
             android:exported="true"
-            android:label="@string/title_activity_router"
+
             android:theme="@style/Theme.App.Starting"
             android:noHistory="true">
 
