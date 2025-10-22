@@ -52,7 +52,7 @@ fun SignInScreen (viewModel: SignInViewModel){
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp, vertical = 100.dp),
+            .padding(horizontal = 16.dp, vertical = 80.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
 
@@ -93,7 +93,8 @@ fun SignInScreen (viewModel: SignInViewModel){
                 ) {
                 Text(
                     text = "Create Account",
-                    color = MaterialTheme.colorScheme.onPrimary)
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.labelLarge)
             }
         }
 
@@ -121,7 +122,8 @@ fun SignInScreen (viewModel: SignInViewModel){
             ) {
                 Text(
                     text = "Already have an Account",
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
 
