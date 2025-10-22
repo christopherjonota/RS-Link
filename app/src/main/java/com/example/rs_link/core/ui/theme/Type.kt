@@ -15,12 +15,24 @@ import com.example.rs_link.R
 //)
 
 // Create the Typography object based on the Material 3 type scale
+
+val nunitoFontFamily = FontFamily(
+    Font(R.font.nunito_bold, FontWeight.Bold),
+    Font(R.font.nunito_black, FontWeight.Black),
+    Font(R.font.nunito, FontWeight.Normal)
+)
+val mulishFontFamily = FontFamily(
+    Font(R.font.mulish_bold, FontWeight.Bold),
+    Font(R.font.mulish_medium, FontWeight.Medium),
+    Font(R.font.mulish_regular, FontWeight.Normal)
+)
+
 val AppTypography = Typography(
 
     // Used for title
     headlineLarge = TextStyle(
-        fontFamily = FontFamily.Default, // Use your custom font or FontFamily.Default
-        fontWeight = FontWeight.Bold,
+        fontFamily = nunitoFontFamily, // Use your custom font or FontFamily.Default
+        fontWeight = FontWeight.Black,
         fontSize = 36.sp,
         letterSpacing = 0.sp
     ),
@@ -30,7 +42,7 @@ val AppTypography = Typography(
 
     // Customizing the body text
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = mulishFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,

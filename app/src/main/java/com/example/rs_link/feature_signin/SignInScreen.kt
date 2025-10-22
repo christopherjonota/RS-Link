@@ -20,8 +20,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +35,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.rs_link.R
-
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun SignInScreen (viewModel: SignInViewModel){
@@ -116,4 +128,49 @@ fun SignInScreen (viewModel: SignInViewModel){
         }
 
     }
+
+//    var showForm by remember { mutableStateOf(false) }
+//    Scaffold (
+//        content = { paddingValues ->
+//            Box(
+//                modifier = Modifier.fillMaxSize(),
+//                contentAlignment = Alignment.Center
+//            ){
+//                Button(onClick = {}) {
+//                    Text("Hello")
+//                }
+//            }
+//        }
+//    )
+//    if (showForm) {
+//        Dialog(onDismissRequest = { showForm = false }) {
+//            // 1. AnimatedVisibility handles the slide-in/out
+//            AnimatedVisibility(
+//                visible = showForm,
+//                // Slide up from the bottom of the screen (full height)
+//                enter = slideInVertically(
+//                    initialOffsetY = { fullHeight -> fullHeight },
+//                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+//                ),
+//                // Slide out back to the bottom
+//                exit = slideOutVertically(
+//                    targetOffsetY = { fullHeight -> fullHeight },
+//                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+//                )
+//            ) {
+//                // 2. The Form Container (e.g., a Card)
+//                Card(
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.85f) // Adjust width
+//                        .wrapContentHeight() // Allow it to sit in the center
+//                        .padding(16.dp)
+//                ) {
+//                    // 3. The Login Form Content
+//                    LoginFormContent(
+//                        onLogin = { showForm = false }
+//                    )
+//                }
+//            }
+//        }
+//    }
 }
