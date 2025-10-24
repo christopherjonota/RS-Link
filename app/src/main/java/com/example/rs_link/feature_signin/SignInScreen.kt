@@ -39,9 +39,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.LinkInteractionListener
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -75,7 +80,6 @@ fun SignInScreen (viewModel: SignInViewModel){
                 //verticalArrangement = Arrangement.Bottom
                 // Use SpaceAround to vertically distribute elements
                 verticalArrangement = Arrangement.SpaceBetween
-
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.rs_link_logo),
@@ -83,16 +87,19 @@ fun SignInScreen (viewModel: SignInViewModel){
                     modifier = Modifier.size(200.dp),
                     contentScale = ContentScale.Fit
                 )
-                Text(
-                    text = "RS-LINK",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.headlineLarge
-                )
-                Text(
-                    text = "Ride smart. Ride safe",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                // 2. Texts (Group them with the Image)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "RS-LINK",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = "Ride smart. Ride safe",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(160.dp))
                 // "Create Account" button
@@ -106,7 +113,7 @@ fun SignInScreen (viewModel: SignInViewModel){
                         onClick = {},
                         modifier = Modifier
                             .fillMaxSize(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
@@ -152,27 +159,26 @@ fun SignInScreen (viewModel: SignInViewModel){
 
             }
         }
-        // This is your main screen content (the "Show Login" button)
-
-        // 4. This is the Bottom Sheet
+        // This is the Bottom Sheet
         if (showBottomSheet) {
+            // This will ignore the 50% anchor and will now occupy the full height of its content
+            val state = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true
+            )
             ModalBottomSheet(
-                // This is called when the user drags the sheet down
-                // or clicks outside the sheet.
+                // This is called when the user drags the sheet down or clicks outside the sheet.
                 onDismissRequest = {
-                    showBottomSheet = false
+                    showBottomSheet = false // This will hide the sheet once it is dismissed
                 },
-                sheetState = sheetState
+                sheetState = state
             ) {
-                // This is the content *inside* the sheet
-                // We re-use your LoginForm composable
                 LoginForm(
                     onClose = {
                         // Animate the sheet hiding, then set the state to false
                         scope.launch {
-                            sheetState.hide()
+                            sheetState.hide() // This handles the animation
                         }.invokeOnCompletion {
-                            showBottomSheet = false
+                            showBottomSheet = false // this will set the state of bottomsheet
                         }
                     }
                 )
@@ -181,51 +187,74 @@ fun SignInScreen (viewModel: SignInViewModel){
     }
 }
 
+
+// This will be the login form that serve as the content inside the bottom sheet
 @Composable
 fun LoginForm(onClose: () -> Unit) {
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     Column(
-        // Add padding at the bottom for better spacing inside the sheet
-        modifier = Modifier.padding(24.dp).padding(bottom = 32.dp),
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 60.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Login",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            text = "Welcome to RS-Link!",
+            style = MaterialTheme.typography.headlineLarge
         )
-        Spacer(Modifier.height(16.dp))
-
+        Text(
+            text = "Track. Alert. Ride with Confidence",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(Modifier.height(40.dp))
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
+            shape = RoundedCornerShape(16.dp),
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         OutlinedTextField(
+            shape = RoundedCornerShape(16.dp),
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(24.dp))
-
+        val listener = "hehe"
+//        = LinkInteractionListener { link ->
+//            if (link is LinkAnnotation.Clickable) {
+//                // This is where you trigger the internal navigation action
+//                onNavigateToForgotPassword()
+//            }
+//        }
+        Text(
+            text = buildAnnotatedString {
+                append("Forgout")
+                withLink(
+                    link = LinkAnnotation.Clickable(
+                        linkInteractionListener = listener
+                    )
+                )
+            }
+        )
         Button(
             onClick = { /* TODO: Handle login logic */ },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Sign In")
+            Text("Log in")
         }
         Spacer(Modifier.height(8.dp))
         Button(
             onClick = onClose, // Trigger the lambda to close the sheet
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Close")
+            Text("Sign up with Google")
         }
     }
 }

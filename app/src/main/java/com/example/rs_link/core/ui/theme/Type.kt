@@ -33,9 +33,8 @@ val AppTypography = Typography(
     // Used for title
     headlineLarge = TextStyle(
         fontFamily = nunitoFontFamily, // Use your custom font or FontFamily.Default
-        fontWeight = FontWeight.Black,
-        fontSize = 36.sp,
-        letterSpacing = 0.sp
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
     ),
     headlineMedium = TextStyle(
         fontFamily = mulishFontFamily,
@@ -43,13 +42,10 @@ val AppTypography = Typography(
         fontSize = 16.sp
     ),
 
-    // Customizing the body text
-    bodyLarge = TextStyle(
-        fontFamily = mulishFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+    titleLarge = TextStyle(
+        fontSize = 36.sp,
+        fontFamily = nunitoFontFamily, // Use your custom font or FontFamily.Default
+        fontWeight = FontWeight.Black
     ),
     // You can customize any other style, like titleMedium, labelSmall, etc.
     titleMedium = TextStyle(
@@ -58,14 +54,21 @@ val AppTypography = Typography(
         fontSize = 18.sp
     ),
 
+    // Used for defaul texts
+    bodyLarge = TextStyle(
+        fontFamily = mulishFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
 
+
+
+    // Used for text on buttons
     labelLarge = TextStyle(
         fontFamily = mulishFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp
     )
-    /*
-    If you don't override a style (e.g., displayLarge), it will fall back 
-    to the Material 3 defaults.
-    */
 )
