@@ -1,6 +1,7 @@
 package com.example.rs_link.feature_signin
 
 import android.graphics.drawable.Drawable
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,15 +43,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.LinkInteractionListener
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,7 +148,7 @@ fun SignInScreen (viewModel: SignInViewModel){
                         onClick = { showBottomSheet = true },
                         modifier = Modifier
                             .fillMaxSize(),
-                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color.Transparent
@@ -182,17 +189,52 @@ fun SignInScreen (viewModel: SignInViewModel){
                         }
                     }
                 )
+
+
             }
         }
     }
 }
 
 
+@Composable
+fun ForgotPassword(onNavigateForgotPassword: () -> Unit){
+    val listener: LinkInteractionListener = LinkInteractionListener{ link ->
+        if (link is LinkAnnotation.Clickable){
+            onNavigateForgotPassword
+        }
+    }
+
+    Text(
+        text = buildAnnotatedString {
+            withLink(
+                link = LinkAnnotation.Clickable(
+                    linkInteractionListener = listener,
+                    tag = "FORGOT_PASSWORD_TAG",
+                    styles = TextLinkStyles(
+                        style = SpanStyle(
+                            textDecoration = TextDecoration.None,
+                        )
+                    ),
+
+                )
+            ){ // <-- 2. The required trailing lambda (the 'block') for withLink starts here
+                append("Forgot Password?") // <-- 3. This is the content inside the link
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth(),
+        textAlign = TextAlign.End,
+        style = MaterialTheme.typography.labelMedium
+    )
+}
+
 // This will be the login form that serve as the content inside the bottom sheet
 @Composable
 fun LoginForm(onClose: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -208,9 +250,9 @@ fun LoginForm(onClose: () -> Unit) {
             text = "Track. Alert. Ride with Confidence",
             style = MaterialTheme.typography.headlineMedium
         )
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(24.dp))
         OutlinedTextField(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
@@ -219,42 +261,61 @@ fun LoginForm(onClose: () -> Unit) {
         Spacer(Modifier.height(12.dp))
 
         OutlinedTextField(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(Modifier.height(4.dp))
+        ForgotPassword {  }
         Spacer(Modifier.height(24.dp))
-        val listener = "hehe"
-//        = LinkInteractionListener { link ->
-//            if (link is LinkAnnotation.Clickable) {
-//                // This is where you trigger the internal navigation action
-//                onNavigateToForgotPassword()
-//            }
-//        }
-        Text(
-            text = buildAnnotatedString {
-                append("Forgout")
-                withLink(
-                    link = LinkAnnotation.Clickable(
-                        linkInteractionListener = listener
-                    )
-                )
-            }
-        )
         Button(
             onClick = { /* TODO: Handle login logic */ },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary)
         ) {
-            Text("Log in")
+            Text(
+                text = "Log in",
+                style = MaterialTheme.typography.labelLarge)
         }
-        Spacer(Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "or",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
         Button(
             onClick = onClose, // Trigger the lambda to close the sheet
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+            colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
         ) {
-            Text("Sign up with Google")
+            Image(
+                painter = painterResource(R.drawable.google_logo),
+                contentDescription = "Google Logo",
+                modifier = Modifier.size(20.dp),
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = "Sign up with Google",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.tertiary
+            )
         }
     }
 }

@@ -14,7 +14,7 @@ val DefaultScheme = lightColorScheme(
 //    secondaryContainer = Color(),
 //    onSecondaryContainer = Color(),
 //
-//    tertiary = ,
+    tertiary = Color(0xFF1D1B20),
 //    onTertiary = ,
 //    tertiaryContainer = ,
 //    onTertiaryContainer = ,
@@ -23,7 +23,7 @@ val DefaultScheme = lightColorScheme(
     onBackground = Color(0xFFFAFAFA),
 //
 //    surface = ,
-//    onSurface = ,
+    onSurface = Color(0xFF1D1B20),
 
 
     error = Color(0xFF026773),

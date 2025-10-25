@@ -42,6 +42,7 @@ val AppTypography = Typography(
         fontSize = 16.sp
     ),
 
+
     titleLarge = TextStyle(
         fontSize = 36.sp,
         fontFamily = nunitoFontFamily, // Use your custom font or FontFamily.Default
@@ -59,8 +60,6 @@ val AppTypography = Typography(
         fontFamily = mulishFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
     ),
 
 
@@ -69,6 +68,14 @@ val AppTypography = Typography(
     labelLarge = TextStyle(
         fontFamily = mulishFontFamily,
         fontWeight = FontWeight.Bold,
+        fontSize = 18.sp
+    ),
+
+    labelMedium = TextStyle(
+        fontFamily = nunitoFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 16.sp
     )
+
+
 )
