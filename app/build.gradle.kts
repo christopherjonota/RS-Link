@@ -75,4 +75,6 @@ dependencies {
     implementation(libs.retroFit) // Check for the latest version
 
     implementation(libs.androidx.datastore)
+
+    implementation(libs.androidx.navigation.compose)
 }

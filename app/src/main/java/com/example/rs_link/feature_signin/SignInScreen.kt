@@ -59,6 +59,18 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
+object Screen{
+    const val REGISTRATION = "registration"
+    const val HOME = "home"
+    const val SIGNIN = "signin"
+}
+
+@Composable
+fun SignInNavigation(){
+
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen (viewModel: SignInViewModel){
