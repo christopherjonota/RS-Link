@@ -56,6 +56,9 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
@@ -66,14 +69,30 @@ object Screen{
 }
 
 @Composable
-fun SignInNavigation(){
+fun SignInNavigation(viewModel: SignInViewModel){
+    val navController = rememberNavController()
 
+    NavHost(
+        navController = navController,
+        startDestination = Screen.HOME
+    ){
+        composable(Screen.HOME){
+            HomeScreen(viewModel, onNavigateToRegistration = {navController.navigate(Screen.REGISTRATION)})
+        }
+        composable(Screen.REGISTRATION){
+            RegistrationScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignInScreen (viewModel: SignInViewModel){
+fun HomeScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit){
 
     // 2. State to control if the sheet is shown or hidden
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -129,7 +148,7 @@ fun SignInScreen (viewModel: SignInViewModel){
                         .height(56.dp)
                 ) {
                     Button(
-                        onClick = {},
+                        onClick = onNavigateToRegistration ,
                         modifier = Modifier
                             .fillMaxSize(),
                         shape = RoundedCornerShape(12.dp),
@@ -210,124 +229,18 @@ fun SignInScreen (viewModel: SignInViewModel){
 
 
 @Composable
-fun ForgotPassword(onNavigateForgotPassword: () -> Unit){
-    val listener: LinkInteractionListener = LinkInteractionListener{ link ->
-        if (link is LinkAnnotation.Clickable){
-            onNavigateForgotPassword
-        }
-    }
-
-    Text(
-        text = buildAnnotatedString {
-            withLink(
-                link = LinkAnnotation.Clickable(
-                    linkInteractionListener = listener,
-                    tag = "FORGOT_PASSWORD_TAG",
-                    styles = TextLinkStyles(
-                        style = SpanStyle(
-                            textDecoration = TextDecoration.None,
-                        )
-                    ),
-
-                )
-            ){ // <-- 2. The required trailing lambda (the 'block') for withLink starts here
-                append("Forgot Password?") // <-- 3. This is the content inside the link
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth(),
-        textAlign = TextAlign.End,
-        style = MaterialTheme.typography.labelMedium
-    )
-}
-
-// This will be the login form that serve as the content inside the bottom sheet
-@Composable
-fun LoginForm(onClose: () -> Unit) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-
+fun RegistrationScreen(onNavigateBack: () -> Unit){
     Column(
         modifier = Modifier
-            .padding(horizontal = 20.dp)
-            .padding(bottom = 60.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.secondary)
     ) {
-        Text(
-            text = "Welcome to RS-Link!",
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Text(
-            text = "Track. Alert. Ride with Confidence",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Spacer(Modifier.height(24.dp))
-        OutlinedTextField(
-            shape = RoundedCornerShape(12.dp),
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedTextField(
-            shape = RoundedCornerShape(12.dp),
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(4.dp))
-        ForgotPassword {  }
-        Spacer(Modifier.height(24.dp))
         Button(
-            onClick = { /* TODO: Handle login logic */ },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary)
+            onClick = onNavigateBack
         ) {
-            Text(
-                text = "Log in",
-                style = MaterialTheme.typography.labelLarge)
-        }
-        Row(
-            modifier = Modifier.padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = "or",
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-        Button(
-            onClick = onClose, // Trigger the lambda to close the sheet
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-            colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
-        ) {
-            Image(
-                painter = painterResource(R.drawable.google_logo),
-                contentDescription = "Google Logo",
-                modifier = Modifier.size(20.dp),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = "Sign up with Google",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.tertiary
-            )
+            Text(text = "Go b|ack")
         }
     }
+
 }
+

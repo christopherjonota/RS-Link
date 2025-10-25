@@ -32,7 +32,7 @@ class SignInActivity : ComponentActivity(){
         }
         setContent {
             ThemeRSLink {
-                SignInScreen(viewModel = viewModel)
+                SignInNavigation(viewModel = viewModel)
             }
         }
     }
