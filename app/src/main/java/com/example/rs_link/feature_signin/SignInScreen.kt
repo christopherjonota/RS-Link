@@ -112,7 +112,11 @@ fun SignInNavigation(viewModel: SignInViewModel){
                         route = Screen.HOME,
                         inclusive = false // This will not remove Screen.HOME from the stack
                     )
-                }
+                },
+                onRegistrationSuccess = {
+                    navController.navigate(Screen.HOME)
+                },
+                viewModel
             )
         }
     }
@@ -142,7 +146,7 @@ fun HomeScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 80.dp),
+                    .padding(horizontal = 12.dp, vertical = 80.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 //verticalArrangement = Arrangement.Bottom
                 // Use SpaceAround to vertically distribute elements
