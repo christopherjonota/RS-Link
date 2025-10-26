@@ -2,6 +2,7 @@ package com.example.rs_link.feature_signin
 
 import android.graphics.drawable.Drawable
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.rs_link.R
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.*
@@ -44,6 +46,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
@@ -76,13 +79,39 @@ fun SignInNavigation(viewModel: SignInViewModel){
         navController = navController,
         startDestination = Screen.HOME
     ){
-        composable(Screen.HOME){
-            HomeScreen(viewModel, onNavigateToRegistration = {navController.navigate(Screen.REGISTRATION)})
+        composable(route = Screen.HOME,
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(700),
+                )
+            }){
+            HomeScreen(viewModel, onNavigateToRegistration = {navController.navigate(Screen.REGISTRATION){
+                launchSingleTop = true // this avoids creating multiple copies of the destination
+                restoreState = true // restore the state when returning to a destination
+            } })
         }
-        composable(Screen.REGISTRATION){
+        composable(route = Screen.REGISTRATION,
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            },
+            // When returning to this screen (from REGISTRATION), slide it in from the LEFT
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            }){
+
             RegistrationScreen(
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.popBackStack(
+                        route = Screen.HOME,
+                        inclusive = false // This will not remove Screen.HOME from the stack
+                    )
                 }
             )
         }
@@ -228,19 +257,5 @@ fun HomeScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit
 }
 
 
-@Composable
-fun RegistrationScreen(onNavigateBack: () -> Unit){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.secondary)
-    ) {
-        Button(
-            onClick = onNavigateBack
-        ) {
-            Text(text = "Go b|ack")
-        }
-    }
 
-}
 
