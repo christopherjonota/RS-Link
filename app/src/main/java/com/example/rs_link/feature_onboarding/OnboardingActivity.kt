@@ -1,25 +1,17 @@
 package com.example.rs_link.feature_onboarding
 
 import android.content.Intent
-import android.content.res.Resources.Theme
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.rs_link.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.widget.ThemeUtils
-import androidx.compose.material3.MaterialTheme
 import com.example.rs_link.core.ui.theme.ThemeRSLink
-import com.example.rs_link.feature_signin.SignInActivity
+import com.example.rs_link.feature_auth.SignInActivity
 
 @AndroidEntryPoint
 class OnboardingActivity : ComponentActivity() {

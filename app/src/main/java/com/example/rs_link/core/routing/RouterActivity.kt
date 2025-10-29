@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import android.content.Intent
 import com.example.rs_link.feature_dashboard.DashboardActivity
 import com.example.rs_link.feature_onboarding.OnboardingActivity
-import com.example.rs_link.feature_signin.SignInActivity
+import com.example.rs_link.feature_auth.SignInActivity
 
 @AndroidEntryPoint // Used for hilt injection
 class RouterActivity : ComponentActivity() {

@@ -22,7 +22,7 @@ val DefaultScheme = lightColorScheme(
     background = Color(0xFF012E40),
     onBackground = Color(0xFFFAFAFA),
 //
-//    surface = ,
+    surface = Color(0xFFFAFAFA),
     onSurface = Color(0xFF1D1B20),
 
 
