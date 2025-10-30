@@ -1,4 +1,4 @@
-package com.example.rs_link.feature_auth
+package com.example.rs_link.feature_auth.registration
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -45,6 +45,7 @@ import java.util.Locale
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.DatePicker
+import com.example.rs_link.feature_auth.SignInViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -235,7 +236,7 @@ fun RegistrationScreen(
             }
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {},
+                onClick = viewModel::register,
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Text(text = "Add Account")

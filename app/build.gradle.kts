@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     alias(libs.plugins.daggerHilt)
+
+    alias(libs.plugins.google.services)
+
+
     kotlin("kapt") // enable the KAPT configuration
 }
 
@@ -77,4 +81,10 @@ dependencies {
     implementation(libs.androidx.datastore)
 
     implementation(libs.androidx.navigation.compose)
+
+    // 1. Import the Firebase BOM (Bill of Materials)
+    implementation(platform(libs.firebase.bom))
+    // 2. Add your Firebase libraries
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 }

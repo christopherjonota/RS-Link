@@ -24,8 +24,11 @@ coreSplashscreen = "1.0.1"
 constraintlayout = "2.1.4"
 
 navigation = "2.9.5"
-activity = "1.11.0" # For ViewModel/Fragment extensions
+activity = "1.11.0"
+firebaseAuthKtx = "24.0.1" # For ViewModel/Fragment extensions
 
+firebaseBom = "33.1.0"
+googleServicesPlugin = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -66,6 +69,14 @@ androidx-datastore = { module = "androidx.datastore:datastore-preferences", vers
 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation"}
 
+# 1. The Bill of Materials (BOM) - This manages other versions
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+
+# 2. The libraries you want (Auth, Firestore, etc.)
+# Notice they have NO version.ref, the BOM handles it!
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -73,4 +84,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 
 daggerHilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
-
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesPlugin" }
