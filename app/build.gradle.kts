@@ -32,6 +32,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            //signed with a simple, public key (just for testing).
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -87,4 +89,5 @@ dependencies {
     // 2. Add your Firebase libraries
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
 }

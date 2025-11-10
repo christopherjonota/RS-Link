@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SignInActivity : ComponentActivity(){
+class AuthActivity : ComponentActivity(){
 
     private val viewModel: SignInViewModel by viewModels()
 
@@ -21,12 +21,11 @@ class SignInActivity : ComponentActivity(){
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){ // runs once it is visible
-
             }
         }
-        setContent {
-            ThemeRSLink {
-                SignInNavigation(viewModel = viewModel)
+        setContent { // This will display the UI/ Content
+            ThemeRSLink { //This is the theme that will be used
+                AuthNavigation(viewModel = viewModel) // Start the Composable function and passing the viewmodel
             }
         }
     }

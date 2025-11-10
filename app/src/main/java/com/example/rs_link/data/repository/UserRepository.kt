@@ -4,6 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.rs_link.data.model.User
 import kotlinx.coroutines.tasks.await
 
+
 class UserRepository {
     // Example using Firebase Authentication and Firestore
     private val auth = FirebaseAuth.getInstance()

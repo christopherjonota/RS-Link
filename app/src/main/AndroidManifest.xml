@@ -44,7 +44,7 @@
             android:name=".feature_dashboard.DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".feature_auth.SignInActivity"
+            android:name=".feature_auth.AuthActivity"
             android:exported="false" />
     </application>
 

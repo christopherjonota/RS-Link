@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import android.content.Intent
 import com.example.rs_link.feature_dashboard.DashboardActivity
 import com.example.rs_link.feature_onboarding.OnboardingActivity
-import com.example.rs_link.feature_auth.SignInActivity
+import com.example.rs_link.feature_auth.AuthActivity
 
 @AndroidEntryPoint // Used for hilt injection
 class RouterActivity : ComponentActivity() {
@@ -21,7 +21,7 @@ class RouterActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        // Install the Splash Screen BEFORE super.onCreate()
+        // Install the Splash Screen
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
@@ -36,7 +36,7 @@ class RouterActivity : ComponentActivity() {
                 viewModel.destination.collect { destination ->
                     when (destination) {
                         is Destination.Onboarding -> navigateTo(OnboardingActivity::class.java)
-                        is Destination.SignIn -> navigateTo(SignInActivity::class.java)
+                        is Destination.SignIn -> navigateTo(AuthActivity::class.java)
                         is Destination.Dashboard -> navigateTo(DashboardActivity::class.java)
                         is Destination.Loading -> { /* Do nothing, waiting for checks */ }
                     }
@@ -44,11 +44,10 @@ class RouterActivity : ComponentActivity() {
             }
         }
     }
-    // 6. Navigation and Finalization Logic
+    // Navigation and Finalization Logic
     private fun navigateTo(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         startActivity(intent)
-
         // Remove this activity to the back stack that prevents the user from pressing the back button
         finish()
     }

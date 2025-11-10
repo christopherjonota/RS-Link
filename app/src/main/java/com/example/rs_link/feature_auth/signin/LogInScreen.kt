@@ -1,4 +1,4 @@
-package com.example.rs_link.feature_auth
+package com.example.rs_link.feature_auth.signin
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

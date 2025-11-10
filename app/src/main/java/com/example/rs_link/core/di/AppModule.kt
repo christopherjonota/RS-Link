@@ -45,6 +45,8 @@ abstract class AppModule {
     abstract fun bindUserPrefsLocalDataSource(
         userPrefsLocalDataSourceImpl: UserPrefsLocalDataSourceImpl
     ): UserPrefsLocalDataSource
+
+
 }
 
 @Module

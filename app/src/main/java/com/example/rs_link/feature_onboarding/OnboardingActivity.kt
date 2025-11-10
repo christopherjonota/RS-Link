@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.rs_link.core.ui.theme.ThemeRSLink
-import com.example.rs_link.feature_auth.SignInActivity
+import com.example.rs_link.feature_auth.AuthActivity
 
 @AndroidEntryPoint
 class OnboardingActivity : ComponentActivity() {
@@ -40,7 +40,7 @@ class OnboardingActivity : ComponentActivity() {
 
     private fun navigateToSignIn() {
         // Launches the next step in the application flow
-        val intent = Intent(this, SignInActivity::class.java)
+        val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
 
         // Remove this Activity from the back stack, as the flow is finished

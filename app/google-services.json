@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "780812155031",
+    "project_id": "rs-link-75bed",
+    "storage_bucket": "rs-link-75bed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780812155031:android:f296294d9c937629e911d2",
+        "android_client_info": {
+          "package_name": "com.example.rs_link"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS3DzY2KKCGLwg2w2RH6Ty2_WHcRyQIeA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
