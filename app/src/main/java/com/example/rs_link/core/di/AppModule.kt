@@ -9,6 +9,8 @@ import com.example.rs_link.data.AuthRepositoryImpl
 import com.example.rs_link.data.UserPrefsLocalDataSourceImpl
 import com.example.rs_link.data.UserPrefsRepositoryImpl
 import com.example.rs_link.data.local.UserPrefsLocalDataSource
+import com.example.rs_link.data.repository.UserRepository
+import com.example.rs_link.data.repository.UserRepositoryImpl
 import com.example.rs_link.domain.repository.AuthRepository
 import com.example.rs_link.domain.repository.UserPrefsRepository
 import dagger.Binds
@@ -45,6 +47,12 @@ abstract class AppModule {
     abstract fun bindUserPrefsLocalDataSource(
         userPrefsLocalDataSourceImpl: UserPrefsLocalDataSourceImpl
     ): UserPrefsLocalDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 
 
 }
