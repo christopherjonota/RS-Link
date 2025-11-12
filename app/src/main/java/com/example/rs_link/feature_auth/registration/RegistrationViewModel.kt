@@ -47,7 +47,7 @@ data class RegistrationUiState(
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    //private val userRepository: UserRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     // Private Mutable State / can be changed
