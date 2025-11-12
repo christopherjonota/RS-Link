@@ -20,6 +20,8 @@ datastore = "1.1.7"
 # Dependency Injection
 hilt = "2.51"
 hiltAndroidX = "1.3.0"
+
+
 coreSplashscreen = "1.0.1"
 constraintlayout = "2.1.4"
 
@@ -53,12 +55,11 @@ androidx-foundation-layout-android = { group = "androidx.compose.foundation", na
 # Hilt Libraries
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref= "hiltAndroidX"}
 
 retroFit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retroFit"}
 
-# Define the AndroidX extensions for Hilt
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltAndroidX" }
-androidx-hilt-lifecycle-viewmodel = { module = "androidx.hilt:hilt-lifecycle-viewmodel", version.ref = "hiltAndroidX" }
+
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }

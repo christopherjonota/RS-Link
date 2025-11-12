@@ -1,4 +1,4 @@
-package com.example.rs_link.feature_auth.signin
+package com.example.rs_link.feature_auth.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -76,7 +76,7 @@ fun LoginForm(onClose: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-
+    // container of the login form
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -84,7 +84,7 @@ fun LoginForm(onClose: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome to RS-Link!",
+            text = "Welcome to RS Link!",
             style = MaterialTheme.typography.headlineLarge
         )
         Text(
@@ -121,6 +121,7 @@ fun LoginForm(onClose: () -> Unit) {
                 text = "Log in",
                 style = MaterialTheme.typography.labelLarge)
         }
+
         Row(
             modifier = Modifier.padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically

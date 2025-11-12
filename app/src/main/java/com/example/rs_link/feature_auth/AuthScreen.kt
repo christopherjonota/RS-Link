@@ -41,7 +41,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.rs_link.R
-import com.example.rs_link.feature_auth.signin.LoginForm
+import com.example.rs_link.feature_auth.login.LoginForm
+import com.example.rs_link.feature_auth.login.SignInViewModel
 import kotlinx.coroutines.launch
 
 
@@ -111,7 +112,7 @@ fun AuthScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit
                         // holds the app name
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "RS-LINK",
+                                text = "RS LINK",
                                 color = MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.titleLarge
                             )
@@ -180,9 +181,9 @@ fun AuthScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit
                 }
             }
         }
+
         // This is the Bottom Sheet
         if (showBottomSheet) {
-
             ModalBottomSheet(
                 // This is called when the user drags the sheet down or clicks outside the sheet.
                 onDismissRequest = {

@@ -1,4 +1,4 @@
-package com.example.rs_link.feature_auth
+package com.example.rs_link.feature_auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

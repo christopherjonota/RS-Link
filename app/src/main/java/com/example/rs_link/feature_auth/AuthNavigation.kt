@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rs_link.feature_auth.registration.RegistrationScreen
+import com.example.rs_link.feature_auth.login.SignInViewModel
+import com.example.rs_link.feature_auth.registration.RegistrationViewModel
 
 object Screen{
     const val REGISTRATION = "registration"
@@ -15,7 +17,10 @@ object Screen{
 }
 
 @Composable
-fun AuthNavigation(viewModel: SignInViewModel){
+fun AuthNavigation(
+    viewModel: SignInViewModel,
+    registrationViewModel: RegistrationViewModel
+){
     val navController = rememberNavController()
 
     NavHost(
@@ -71,7 +76,7 @@ fun AuthNavigation(viewModel: SignInViewModel){
                 onRegistrationSuccess = {
                     navController.navigate(Screen.AUTH)
                 },
-                viewModel
+                registrationViewModel
             )
         }
     }

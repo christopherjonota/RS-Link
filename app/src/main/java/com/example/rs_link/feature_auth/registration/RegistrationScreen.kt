@@ -1,7 +1,10 @@
 package com.example.rs_link.feature_auth.registration
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,16 +51,29 @@ import java.util.Locale
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.DatePicker
-import com.example.rs_link.feature_auth.SignInViewModel
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+
+import com.example.rs_link.feature_auth.login.SignInViewModel
+import com.google.firestore.v1.TransactionOptions.ReadOnly
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen(
     onNavigateBack: () -> Unit, // callback function passed to the navigation controller to go back
     onRegistrationSuccess: () -> Unit,  // callback function that triggers once the registration is finished
-    viewModel: SignInViewModel  // This will inject the viewmodel on this compose
+    viewModel: RegistrationViewModel  = hiltViewModel()
 ) {
+
     val state by viewModel.uiState.collectAsState() // holds the value of the state e.g. email, password, etc.
+
     val context = LocalContext.current // Used for the Toast
 
     // Reacts only when isRegistrationSuccess changes to true
@@ -64,7 +83,7 @@ fun RegistrationScreen(
             onRegistrationSuccess() // Navigate to the next screen
         }
     }
-    // 1. Create and remember the ScrollState
+    // Create and remember the ScrollState
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -73,7 +92,8 @@ fun RegistrationScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 12.dp),
+                horizontalAlignment = Alignment.Start
             ) {
                 Spacer(modifier = Modifier.height(36.dp))
                 Button(
@@ -91,8 +111,10 @@ fun RegistrationScreen(
                     Text(text = "Back")
                 }
             }
-        }
+        },
     ) { paddingValues ->
+
+        // holds the content
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -109,134 +131,110 @@ fun RegistrationScreen(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(Modifier.height(24.dp))
-            Column ( // This will be the container per text field
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "First Name",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium
-                )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = viewModel::onPasswordChange,
-                    label = {
-                        Text("Enter your first name")
-                            },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
+
+            // First Name text field
+            LabeledTextField(
+                title = "First Name",
+                value = state.firstName,
+                onValueChange = viewModel::onFirstNameChange,
+                placeholder = "Enter your first name"
+            )
+            Spacer(Modifier.height(12.dp))
+
+            // Last Name text field
+            LabeledTextField(
+                title = "Last Name",
+                value = state.lastName,
+                onValueChange = viewModel::onLastNameChange,
+                placeholder = "Enter your last name"
+            )
 
             Spacer(Modifier.height(12.dp))
-            Column ( // This will be the container per text field
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Last Name",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium
+
+            // Contact Number text field
+            LabeledTextField(
+                title = "Contact Number",
+                value = state.contactNumber,
+                onValueChange = viewModel::onContactNumberChange,
+                placeholder = "Enter your contact number",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
                 )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = viewModel::onPasswordChange,
-                    label = {
-                        Text("Enter your last name")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
+            )
 
             Spacer(Modifier.height(12.dp))
-            BirthDateInput()
+
+            // Birthday text field
+            DatePickerField(
+                title = "Birthday",
+                value = state.birthdayDisplay,
+                placeholder = "Select Date",
+                onDateSelected = { millis ->
+                    viewModel.onBirthDateChange(millis)
+                }
+            )
 
             Spacer(Modifier.height(12.dp))
-            Column ( // This will be the container per text field
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Contact Number",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium
+
+            LabeledTextField(
+                title = "Email Address",
+                value = state.email,
+                onValueChange = viewModel::onEmailChange,
+                placeholder = "Enter your email address",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email
                 )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = viewModel::onPasswordChange,
-                    label = {
-                        Text("Enter your last name")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
+
+            )
 
             Spacer(Modifier.height(12.dp))
-            Column ( // This will be the container per text field
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Email Address",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium
-                )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = viewModel::onPasswordChange,
-                    label = {
-                        Text("Email address")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
+
+            var passwordVisible by remember { mutableStateOf(false) }
+            LabeledTextField(
+                title = "Password",
+                value = state.password,
+                onValueChange = viewModel::onPasswordChange,
+                placeholder = "Enter your password",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None // Show password
+                } else {
+                    PasswordVisualTransformation() // Hide password
+                },
+                trailingIcon = {
+                    // Determine which icon to show
+                    val image = if (passwordVisible)
+                        Icons.Filled.Check // Eye icon open
+                    else
+                        Icons.Filled.Add // Eye icon closed
+
+                    IconButton(onClick = {
+                        passwordVisible = !passwordVisible // Toggle state on click
+                    }) {
+                        Icon(imageVector  = image, contentDescription = "Toggle password visibility")
+                    }
+                }
+
+            )
             Spacer(Modifier.height(12.dp))
-            Column ( // This will be the container per text field
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Password",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium
-                )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = viewModel::onPasswordChange,
-                    placeholder = {
-                        Text("Enter your password")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            Column ( // This will be the container per text field
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Confirm Password",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium
-                )
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = viewModel::onPasswordChange,
-                    placeholder = {
-                        Text("Re-enter your password")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
+
+            LabeledTextField(
+                title = "Confirm Password",
+                value = state.confirmPassword,
+                onValueChange = viewModel::onConfirmPasswordChange,
+                placeholder = "Re-enter your password",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+                visualTransformation = PasswordVisualTransformation()
+
+            )
+            Spacer(Modifier.height(24.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = viewModel::register,
+                onClick = {  },
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Text(text = "Add Account")
@@ -247,41 +245,173 @@ fun RegistrationScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BirthDateInput() {
-    // State to hold the date selection and dialog visibility
-    val datePickerState = rememberDatePickerState()
-    var showDialog by remember { mutableStateOf(false) }
+fun DatePickerField(
+    title: String,
+    value: String,
+    placeholder: String,
+    onDateSelected: (Long) -> Unit // This is the callback
+) {
+    // the state for the picker lives here
+    var showDatePicker by remember { mutableStateOf(false) }
 
-    // Logic to format the selected date (omitted for brevity)
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        // Convert millis to a formatted date string
-        SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Date(it))
-    } ?: "Select Date"
+    // DatePickerDialog logic
+    if (showDatePicker) { // if the textfield was clicked this will show
+        val datePickerState = rememberDatePickerState() // this is what is used to interact with and get data
 
-    OutlinedTextField(
-        value = selectedDate,
-        onValueChange = { /* readOnly is true, so this is empty */ },
-        label = { Text("Date of Birth") },
-        readOnly = true, // Key: Prevents manual keyboard input
-        trailingIcon = {
-            IconButton(onClick = { showDialog = true }) {
-                Icon(Icons.Default.DateRange, contentDescription = "Select date")
-            }
-        }
-    )
-
-    // The Date Picker Dialog
-    if (showDialog) {
         DatePickerDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = { showDatePicker = false }, // unshow the date picker
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) { Text("OK") }
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { onDateSelected(it) }
+                        showDatePicker = false // Close the dialog
+                    }
+                ) {
+                    Text("OK")
+                }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showDatePicker = false }) { // unshow the date picker
+                    Text("Cancel")
+                }
             }
         ) {
             DatePicker(state = datePickerState)
         }
     }
+
+    // 4. This is the UI. It *uses* your LabeledTextField
+    LabeledTextField(
+        title = title,
+        value = value,
+        onValueChange = {}, // Not used
+        placeholder = placeholder,
+        enabled = false, // Makes it read-only
+        modifier = Modifier.clickable { // Makes it clickable
+            showDatePicker = true
+        },
+        trailingIcon = {
+            IconButton(onClick = {showDatePicker = true}) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Select date"
+                )
+            }
+
+        }
+
+    )
+//    // State to hold the date selection and dialog visibility
+//    val datePickerState = rememberDatePickerState()
+//    var showDialog by remember { mutableStateOf(false) }
+//
+//    // Logic to format the selected date (omitted for brevity)
+//    val selectedDate = datePickerState.selectedDateMillis?.let {
+//        // Convert millis to a formatted date string
+//        SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Date(it))
+//    } ?: "Select Date"
+//
+//    OutlinedTextField(
+//        value = selectedDate,
+//        onValueChange = { /* readOnly is true, so this is empty */ },
+//        label = { Text("Date of Birth") },
+//        readOnly = true, // Key: Prevents manual keyboard input
+//        trailingIcon = {
+//            IconButton(onClick = { showDialog = true }) {
+//                Icon(Icons.Default.DateRange, contentDescription = "Select date")
+//            }
+//        }
+//    )
+//
+//    // The Date Picker Dialog
+//    if (showDialog) {
+//        DatePickerDialog(
+//            onDismissRequest = { showDialog = false },
+//            confirmButton = {
+//                TextButton(onClick = { showDialog = false }) { Text("OK") }
+//            },
+//            dismissButton = {
+//                TextButton(onClick = { showDialog = false }) { Text("Cancel") }
+//            }
+//        ) {
+//            DatePicker(state = datePickerState)
+//        }
+//    }
 }
+
+@Composable
+fun LabeledTextField(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false
+//    isError: Boolean = false,
+//    supportingText: String? = null
+) {
+
+
+    // This holds the label and the text field
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // This is the label above the field
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        Spacer(modifier = Modifier.height(4.dp)) // Added a small spacer
+
+        // This is the text field
+        OutlinedTextField(
+            value = value,                // Use the 'value' parameter
+            onValueChange = onValueChange,  // Use the 'onValueChange' parameter
+            placeholder = { Text(placeholder) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = keyboardOptions,
+            visualTransformation = visualTransformation,
+            singleLine = true, // Good for most form fields
+            enabled = enabled,
+            readOnly = !enabled,
+            trailingIcon = trailingIcon,
+            // Ensure colors look "active" even when disabled so the icon isn't grayed out
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                // This ensures the icon stays visible/dark even if enabled=false
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            // --- APPLY THE ERROR STATE ---
+//            isError = isError
+        )
+        // --- ADD THE SUPPORTING/ERROR TEXT ---
+//        if (supportingText != null) {
+//            Text(
+//                text = supportingText,
+//                color = if (isError) {
+//                    MaterialTheme.colorScheme.error // Use error color if 'isError' is true
+//                } else {
+//                    MaterialTheme.colorScheme.onSurfaceVariant // Use a subtle color for regular hints
+//                },
+//                style = MaterialTheme.typography.bodySmall,
+//                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+//            )
+//        }
+
+    }
+}
+
+
+
+
