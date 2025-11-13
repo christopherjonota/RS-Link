@@ -1,5 +1,6 @@
 package com.example.rs_link.feature_auth.registration
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rs_link.data.repository.UserRepository
@@ -131,10 +132,15 @@ class RegistrationViewModel @Inject constructor(
      * Called when the "Add Account" button is clicked.
      */
     fun register() {
+        Log.d("RegisterDebug", "Button Clicked!")
         // Run final validation check on all fields
         if (!validateAllFields()) {
-            return // Stop if any field is invalid
+            Log.e("RegisterDebug", "Validation Failed! Check your inputs.")
+            return
         }
+        Log.d("RegisterDebug", "Validation Passed. Starting network call...")
+
+
 
         // Set loading state
         _uiState.update { it.copy(isLoading = true, generalError = null) }

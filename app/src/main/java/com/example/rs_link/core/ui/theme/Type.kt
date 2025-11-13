@@ -61,6 +61,16 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
     ),
+    bodyMedium = TextStyle(
+        fontFamily = mulishFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = mulishFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
 
 
 

@@ -1,8 +1,6 @@
 package com.example.rs_link.feature_auth.registration
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -45,24 +43,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.rs_link.R
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-
-import com.example.rs_link.feature_auth.login.SignInViewModel
-import com.google.firestore.v1.TransactionOptions.ReadOnly
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.example.rs_link.core.ui.theme.ThemeRSLink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,7 +126,8 @@ fun RegistrationScreen(
                 title = "First Name",
                 value = state.firstName,
                 onValueChange = viewModel::onFirstNameChange,
-                placeholder = "Enter your first name"
+                placeholder = "Enter your first name",
+                errorText = state.firstNameError
             )
             Spacer(Modifier.height(12.dp))
 
@@ -234,7 +224,7 @@ fun RegistrationScreen(
             Spacer(Modifier.height(24.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {  },
+                onClick = viewModel::register,
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Text(text = "Add Account")
@@ -347,14 +337,14 @@ fun LabeledTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    readOnly: Boolean = false
-//    isError: Boolean = false,
-//    supportingText: String? = null
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default, // used for fields like email, number, password, etc.
+    visualTransformation: VisualTransformation = VisualTransformation.None, // used for the visuals like password field
+    trailingIcon: @Composable (() -> Unit)? = null, // used as trailing icon that will be showed inside the field
+    readOnly: Boolean = false,
+    errorText: String? = null
 ) {
-
+    // Helper to check if there is an error
+    val isError = errorText != null
 
     // This holds the label and the text field
     Column(
@@ -390,24 +380,27 @@ fun LabeledTextField(
                 disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 // This ensures the icon stays visible/dark even if enabled=false
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            // --- APPLY THE ERROR STATE ---
-//            isError = isError
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.tertiary,
+            ),
+
+
+            // apply the state if there is an error
+            isError = isError,
+
+            // shows the error message
+            // This adds the little red text below the field
+            supportingText = {
+                if (isError) {
+                    Text(
+                        text = errorText!!, // ensures that the errorText will not be null if there is an error
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         )
-        // --- ADD THE SUPPORTING/ERROR TEXT ---
-//        if (supportingText != null) {
-//            Text(
-//                text = supportingText,
-//                color = if (isError) {
-//                    MaterialTheme.colorScheme.error // Use error color if 'isError' is true
-//                } else {
-//                    MaterialTheme.colorScheme.onSurfaceVariant // Use a subtle color for regular hints
-//                },
-//                style = MaterialTheme.typography.bodySmall,
-//                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-//            )
-//        }
+
 
     }
 }
