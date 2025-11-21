@@ -26,6 +26,7 @@ data class RegistrationUiState(
     val birthdayDisplay: String = "",
     val birthday: Long? = null, // Store as milliseconds
     val contactNumber: String = "",
+    val countryCode: String = "+63",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
@@ -91,10 +92,27 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun onContactNumberChange(newValue: String) {
-        _uiState.update { it.copy(
-            contactNumber = newValue,
-            contactNumberError = if (newValue.length < 10) "Invalid contact number" else null
-        ) }
+        val numericValue = newValue.filter { it.isDigit() }
+
+        // 2. Check if it starts with '0' and remove it
+        val sanitizedValue = if (numericValue.startsWith("0")) {
+            numericValue.removePrefix("0")
+        } else {
+            numericValue
+        }
+
+        // 3. (Optional) Limit the length (e.g., standard 10 digits for PH)
+        if (sanitizedValue.length <= 10) {
+            _uiState.update {
+                it.copy(
+                    contactNumber = sanitizedValue,
+                    contactNumberError = null // Clear error while typing
+                )
+            }
+        }
+    }
+    fun onCountryCodeChange(newCode: String) {
+        _uiState.update { it.copy(countryCode = newCode) }
     }
 
     fun onEmailChange(newValue: String) {
@@ -134,10 +152,10 @@ class RegistrationViewModel @Inject constructor(
     fun register() {
         Log.d("RegisterDebug", "Button Clicked!")
         // Run final validation check on all fields
-        if (!validateAllFields()) {
-            Log.e("RegisterDebug", "Validation Failed! Check your inputs.")
-            return
-        }
+//        if (!validateAllFields()) {
+//            Log.e("RegisterDebug", "Validation Failed! Check your inputs.")
+//            return
+//        }
         Log.d("RegisterDebug", "Validation Passed. Starting network call...")
 
 
@@ -193,7 +211,7 @@ class RegistrationViewModel @Inject constructor(
         // Check if any error fields are non-null
         return state.firstNameError == null &&
                 state.lastNameError == null &&
-                state.birthDateError == null &&
+                //state.birthDateError == null &&
                 state.contactNumberError == null &&
                 state.emailError == null &&
                 state.passwordError == null &&

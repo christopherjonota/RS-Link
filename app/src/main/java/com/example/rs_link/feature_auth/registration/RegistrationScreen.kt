@@ -3,6 +3,7 @@ package com.example.rs_link.feature_auth.registration
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
@@ -46,6 +50,8 @@ import com.example.rs_link.R
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -64,6 +70,18 @@ fun RegistrationScreen(
     val state by viewModel.uiState.collectAsState() // holds the value of the state e.g. email, password, etc.
 
     val context = LocalContext.current // Used for the Toast
+    // Create and remember the ScrollState
+    val scrollState = rememberScrollState()
+
+    // requester for each field
+    val firstNameRequester = remember { BringIntoViewRequester() }
+    val lastNameRequester = remember { BringIntoViewRequester() }
+    val emailRequester = remember { BringIntoViewRequester() }
+    val passwordRequester = remember { BringIntoViewRequester() }
+
+    // 1. Local state for the dropdown menu
+    var expanded by remember { mutableStateOf(false) }
+    val countryCodes = listOf("+63") // Add more as needed
 
     // Reacts only when isRegistrationSuccess changes to true
     LaunchedEffect(state.isRegistrationSuccess) {
@@ -72,8 +90,25 @@ fun RegistrationScreen(
             onRegistrationSuccess() // Navigate to the next screen
         }
     }
-    // Create and remember the ScrollState
-    val scrollState = rememberScrollState()
+    LaunchedEffect(
+        state.firstNameError,
+        state.lastNameError,
+        state.emailError,
+        state.passwordError
+    ) {
+        // Check errors in order from TOP to BOTTOM
+
+        if (state.firstNameError != null) {
+            firstNameRequester.bringIntoView()
+        } else if (state.lastNameError != null) {
+            lastNameRequester.bringIntoView()
+        } else if (state.emailError != null) {
+            emailRequester.bringIntoView()
+        } else if (state.passwordError != null) {
+            passwordRequester.bringIntoView()
+        }
+    }
+
 
     Scaffold(
         topBar = { // This will only contain the back button
@@ -127,19 +162,22 @@ fun RegistrationScreen(
                 value = state.firstName,
                 onValueChange = viewModel::onFirstNameChange,
                 placeholder = "Enter your first name",
-                errorText = state.firstNameError
+                errorText = state.firstNameError,
+                modifier = Modifier.bringIntoViewRequester(firstNameRequester)
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             // Last Name text field
             LabeledTextField(
                 title = "Last Name",
                 value = state.lastName,
                 onValueChange = viewModel::onLastNameChange,
-                placeholder = "Enter your last name"
+                placeholder = "Enter your last name",
+                errorText = state.lastNameError,
+                modifier = Modifier.bringIntoViewRequester(lastNameRequester)
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             // Contact Number text field
             LabeledTextField(
@@ -148,11 +186,41 @@ fun RegistrationScreen(
                 onValueChange = viewModel::onContactNumberChange,
                 placeholder = "Enter your contact number",
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
-                )
+                    keyboardType = KeyboardType.Phone
+                ),
+                leadingIcon = {
+                    Box {
+                        TextButton(onClick = {expanded = true}) {
+                            Text(
+                                text = state.countryCode,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            countryCodes.forEach{ code ->
+                                DropdownMenuItem(
+                                    text = { Text(code)},
+                                    onClick = {
+                                        viewModel.onCountryCodeChange(code)
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             // Birthday text field
             DatePickerField(
@@ -164,8 +232,10 @@ fun RegistrationScreen(
                 }
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
+
+            // Email Address text field
             LabeledTextField(
                 title = "Email Address",
                 value = state.email,
@@ -173,11 +243,13 @@ fun RegistrationScreen(
                 placeholder = "Enter your email address",
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email
-                )
+                ),
+                errorText = state.emailError,
+                modifier = Modifier.bringIntoViewRequester(emailRequester)
 
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             var passwordVisible by remember { mutableStateOf(false) }
             LabeledTextField(
@@ -205,10 +277,12 @@ fun RegistrationScreen(
                     }) {
                         Icon(imageVector  = image, contentDescription = "Toggle password visibility")
                     }
-                }
+                },
+                errorText = state.passwordError,
+                modifier = Modifier.bringIntoViewRequester(passwordRequester)
 
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             LabeledTextField(
                 title = "Confirm Password",
@@ -341,7 +415,8 @@ fun LabeledTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None, // used for the visuals like password field
     trailingIcon: @Composable (() -> Unit)? = null, // used as trailing icon that will be showed inside the field
     readOnly: Boolean = false,
-    errorText: String? = null
+    errorText: String? = null,
+    leadingIcon: @Composable (() -> Unit)? = null
 ) {
     // Helper to check if there is an error
     val isError = errorText != null
@@ -362,6 +437,7 @@ fun LabeledTextField(
 
         // This is the text field
         OutlinedTextField(
+            leadingIcon = leadingIcon,
             value = value,                // Use the 'value' parameter
             onValueChange = onValueChange,  // Use the 'onValueChange' parameter
             placeholder = { Text(placeholder) },
