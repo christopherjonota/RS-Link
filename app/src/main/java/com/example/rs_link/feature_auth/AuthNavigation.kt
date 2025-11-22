@@ -18,8 +18,9 @@ object Screen{
 
 @Composable
 fun AuthNavigation(
-    viewModel: SignInViewModel,
-    registrationViewModel: RegistrationViewModel
+    loginViewModel: SignInViewModel,
+    registrationViewModel: RegistrationViewModel,
+    onLoginSuccess: () -> Unit
 ){
     val navController = rememberNavController()
 
@@ -39,13 +40,16 @@ fun AuthNavigation(
             })
         {
             AuthScreen(
-                viewModel,
+                viewModel = loginViewModel,
                 onNavigateToRegistration = {
                     navController.navigate(Screen.REGISTRATION){
                         launchSingleTop = true // this avoids creating multiple copies of the destination
                         restoreState = true // restore the state when returning to a destination
                     }
-                })
+                },
+                onLoginSuccess = onLoginSuccess
+
+            )
         }
 
 

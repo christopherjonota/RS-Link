@@ -48,7 +48,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit){
+fun AuthScreen (
+    viewModel: SignInViewModel,
+    onNavigateToRegistration: () -> Unit,
+    onLoginSuccess: ()-> Unit
+)
+{
 
     // This will control the sheet
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -192,6 +197,7 @@ fun AuthScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit
                 sheetState = sheetState
             ) {
                 LoginForm(
+                    viewModel = viewModel,
                     onClose = {
                         // Animate the sheet hiding, then set the state to false
                         scope.launch {
@@ -199,8 +205,9 @@ fun AuthScreen (viewModel: SignInViewModel, onNavigateToRegistration: () -> Unit
                         }.invokeOnCompletion {
                             showBottomSheet = false // this will set the state of bottomsheet
                         }
-                    }
-                )
+                    },
+                    onLoginSuccess =  onLoginSuccess,
+                    onNavigateToRegistration = onNavigateToRegistration )
             }
         }
     }

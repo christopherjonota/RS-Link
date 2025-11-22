@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.rs_link.R
 
 @Composable
@@ -72,7 +75,21 @@ fun ForgotPassword(onNavigateForgotPassword: () -> Unit){
 
 // This will be the login form that serve as the content inside the bottom sheet
 @Composable
-fun LoginForm(onClose: () -> Unit) {
+fun LoginForm(
+   viewModel: SignInViewModel = hiltViewModel(),
+   onLoginSuccess: () -> Unit,
+   onNavigateToRegistration: () -> Unit,
+    onClose: () -> Unit)
+{
+    val state by viewModel.uiState.collectAsState() // holds the value of the state e.g. email, password, etc.
+
+    // 1. Watch for Success
+    LaunchedEffect(state.isLoginSuccess) {
+        if (state.isLoginSuccess) {
+            onLoginSuccess()
+        }
+    }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -112,7 +129,7 @@ fun LoginForm(onClose: () -> Unit) {
         ForgotPassword {  }
         Spacer(Modifier.height(24.dp))
         Button(
-            onClick = { /* TODO: Handle login logic */ },
+            onClick = viewModel::login,
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary)
