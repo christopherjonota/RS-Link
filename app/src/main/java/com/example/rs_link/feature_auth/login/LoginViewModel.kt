@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.util.regex.Pattern
+import android.util.Log
 
 data class LoginUiState(
     val email: String = "",
@@ -56,6 +57,8 @@ class SignInViewModel @Inject constructor(
     fun login() {
         // Basic Validation
         val state = _uiState.value
+
+        Log.d("LoginDebug", "Login Clicked...")
         if (state.email.isBlank() || state.password.isBlank()) {
             _uiState.update { it.copy(errorMessage = "Please fill in all fields") }
             return
@@ -65,12 +68,15 @@ class SignInViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                userRepository.login(state.email, state.password)
+                Log.d("LoginDebug", "3. Calling Firebase...")
 
+                userRepository.login(state.email, state.password)
+                Log.d("LoginDebug", "4. Firebase Success! Updating State.")
                 // Success!
                 _uiState.update { it.copy(isLoading = false, isLoginSuccess = true) }
 
             } catch (e: Exception) {
+                Log.e("LoginDebug", "5. Firebase Failed: ${e.message}", e)
                 // Failure (Wrong password, user not found, etc.)
                 _uiState.update { it.copy(
                     isLoading = false,

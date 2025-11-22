@@ -24,10 +24,6 @@ class AuthActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){ // runs once it is visible
-            }
-        }
         setContent { // This will display the UI/ Content
             ThemeRSLink { //This is the theme that will be used
                 AuthNavigation(

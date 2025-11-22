@@ -1,5 +1,6 @@
 package com.example.rs_link.feature_auth.login
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -86,6 +87,7 @@ fun LoginForm(
     // 1. Watch for Success
     LaunchedEffect(state.isLoginSuccess) {
         if (state.isLoginSuccess) {
+            Log.e("haha","Success login")
             onLoginSuccess()
         }
     }
@@ -111,8 +113,8 @@ fun LoginForm(
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             shape = RoundedCornerShape(12.dp),
-            value = email,
-            onValueChange = { email = it },
+            value = state.email,
+            onValueChange = viewModel::onEmailChange ,
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -120,8 +122,8 @@ fun LoginForm(
 
         OutlinedTextField(
             shape = RoundedCornerShape(12.dp),
-            value = password,
-            onValueChange = { password = it },
+            value = state.password,
+            onValueChange = viewModel::onPasswordChange,
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth()
         )
