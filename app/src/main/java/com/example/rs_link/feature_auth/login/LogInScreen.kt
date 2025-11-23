@@ -11,20 +11,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +36,15 @@ import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.rs_link.R
+import com.example.rs_link.feature_auth.registration.LabeledTextField
 
 @Composable
 fun ForgotPassword(onNavigateForgotPassword: () -> Unit){
@@ -84,6 +88,23 @@ fun LoginForm(
 {
     val state by viewModel.uiState.collectAsState() // holds the value of the state e.g. email, password, etc.
 
+    val emailRequester = remember { BringIntoViewRequester() }
+    val passwordRequester = remember { BringIntoViewRequester() }
+
+    // 1. Create state for the Snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // 2. Watch for Errors and show Snackbar
+    LaunchedEffect(state.errorMessage) {
+        if (state.errorMessage != null) {
+            snackbarHostState.showSnackbar(
+                message = state.errorMessage!!,
+                actionLabel = "Dismiss" // Optional button on the snackbar
+            )
+            // 3. Tell ViewModel we showed it, so it clears the state
+            viewModel.onErrorShown()
+        }
+    }
     // 1. Watch for Success
     LaunchedEffect(state.isLoginSuccess) {
         if (state.isLoginSuccess) {
@@ -91,10 +112,6 @@ fun LoginForm(
             onLoginSuccess()
         }
     }
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
     // container of the login form
     Column(
         modifier = Modifier
@@ -111,30 +128,35 @@ fun LoginForm(
             style = MaterialTheme.typography.headlineMedium
         )
         Spacer(Modifier.height(24.dp))
-        OutlinedTextField(
-            shape = RoundedCornerShape(12.dp),
+        LabeledTextField(
+            label = "Email",
             value = state.email,
-            onValueChange = viewModel::onEmailChange ,
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = viewModel::onEmailChange,
+            placeholder = "Enter your email",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
+            errorText = state.emailError
         )
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedTextField(
-            shape = RoundedCornerShape(12.dp),
+        LabeledTextField(
+            label = "Password",
             value = state.password,
             onValueChange = viewModel::onPasswordChange,
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
+            placeholder = "Enter your password",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            errorText = state.passwordError
         )
-        Spacer(Modifier.height(4.dp))
         ForgotPassword {  }
         Spacer(Modifier.height(24.dp))
         Button(
             onClick = viewModel::login,
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary)
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+            enabled = !state.isLoading
         ) {
             Text(
                 text = "Log in",

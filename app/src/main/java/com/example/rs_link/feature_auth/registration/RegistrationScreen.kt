@@ -56,8 +56,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.rs_link.core.ui.theme.ThemeRSLink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,7 +158,7 @@ fun RegistrationScreen(
 
             // First Name text field
             LabeledTextField(
-                title = "First Name",
+                textFieldLabel = "First Name",
                 value = state.firstName,
                 onValueChange = viewModel::onFirstNameChange,
                 placeholder = "Enter your first name",
@@ -169,7 +169,7 @@ fun RegistrationScreen(
 
             // Last Name text field
             LabeledTextField(
-                title = "Last Name",
+                textFieldLabel = "Last Name",
                 value = state.lastName,
                 onValueChange = viewModel::onLastNameChange,
                 placeholder = "Enter your last name",
@@ -181,7 +181,7 @@ fun RegistrationScreen(
 
             // Contact Number text field
             LabeledTextField(
-                title = "Contact Number",
+                textFieldLabel = "Contact Number",
                 value = state.contactNumber,
                 onValueChange = viewModel::onContactNumberChange,
                 placeholder = "Enter your contact number",
@@ -237,7 +237,7 @@ fun RegistrationScreen(
 
             // Email Address text field
             LabeledTextField(
-                title = "Email Address",
+                textFieldLabel = "Email Address",
                 value = state.email,
                 onValueChange = viewModel::onEmailChange,
                 placeholder = "Enter your email address",
@@ -253,7 +253,7 @@ fun RegistrationScreen(
 
             var passwordVisible by remember { mutableStateOf(false) }
             LabeledTextField(
-                title = "Password",
+                textFieldLabel = "Password",
                 value = state.password,
                 onValueChange = viewModel::onPasswordChange,
                 placeholder = "Enter your password",
@@ -285,7 +285,7 @@ fun RegistrationScreen(
             Spacer(Modifier.height(8.dp))
 
             LabeledTextField(
-                title = "Confirm Password",
+                textFieldLabel = "Confirm Password",
                 value = state.confirmPassword,
                 onValueChange = viewModel::onConfirmPasswordChange,
                 placeholder = "Re-enter your password",
@@ -346,7 +346,7 @@ fun DatePickerField(
 
     // 4. This is the UI. It *uses* your LabeledTextField
     LabeledTextField(
-        title = title,
+        textFieldLabel = title,
         value = value,
         onValueChange = {}, // Not used
         placeholder = placeholder,
@@ -405,18 +405,20 @@ fun DatePickerField(
 
 @Composable
 fun LabeledTextField(
-    title: String,
+    modifier: Modifier = Modifier,
+    textFieldLabel: String? = null,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default, // used for fields like email, number, password, etc.
     visualTransformation: VisualTransformation = VisualTransformation.None, // used for the visuals like password field
     trailingIcon: @Composable (() -> Unit)? = null, // used as trailing icon that will be showed inside the field
     readOnly: Boolean = false,
     errorText: String? = null,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
+    label: String? = null,
+    spacer: Dp? = 3.dp
 ) {
     // Helper to check if there is an error
     val isError = errorText != null
@@ -427,16 +429,21 @@ fun LabeledTextField(
         modifier = modifier.fillMaxWidth()
     ) {
         // This is the label above the field
-        Text(
-            text = title,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.labelMedium
-        )
+        if(textFieldLabel != null){
+            Text(
+                text = textFieldLabel,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp)) // Added a small spacer
+        }
 
-        Spacer(modifier = Modifier.height(4.dp)) // Added a small spacer
 
         // This is the text field
         OutlinedTextField(
+            label = if (label != null) {
+                { Text(label) }
+            } else null,
             leadingIcon = leadingIcon,
             value = value,                // Use the 'value' parameter
             onValueChange = onValueChange,  // Use the 'onValueChange' parameter
@@ -449,6 +456,7 @@ fun LabeledTextField(
             enabled = enabled,
             readOnly = !enabled,
             trailingIcon = trailingIcon,
+
             // Ensure colors look "active" even when disabled so the icon isn't grayed out
             colors = OutlinedTextFieldDefaults.colors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
@@ -459,7 +467,6 @@ fun LabeledTextField(
                 disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 unfocusedPlaceholderColor = MaterialTheme.colorScheme.tertiary,
             ),
-
 
             // apply the state if there is an error
             isError = isError,
