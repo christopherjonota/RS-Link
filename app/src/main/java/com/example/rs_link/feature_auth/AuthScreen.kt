@@ -99,7 +99,7 @@ fun AuthScreen (
     )
     // This will animate the padding value when 'showBottomSheet' changes.
     val logoPaddingTop by animateDpAsState( // adjust the padding
-        targetValue = if (loginFormBottomSheet) 80.dp else 120.dp, // Moves from 120dp to 80dp
+        targetValue = if (loginFormBottomSheet) 60.dp else 120.dp, // Moves from 120dp to 80dp
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "LogoPadding"
     )

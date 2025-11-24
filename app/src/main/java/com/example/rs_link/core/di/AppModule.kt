@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.rs_link.data.AuthRepositoryImpl
-import com.example.rs_link.data.UserPrefsLocalDataSourceImpl
+import com.example.rs_link.data.local.UserPrefsLocalDataSourceImpl
 import com.example.rs_link.data.UserPrefsRepositoryImpl
 import com.example.rs_link.data.local.UserPrefsLocalDataSource
 import com.example.rs_link.data.repository.UserRepository

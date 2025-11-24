@@ -92,7 +92,8 @@ class LoginViewModel @Inject constructor(
                 Log.d("LoginDebug", "Firebase Login Success! Updating State. Removing the loading screen and redirects to dashboard")
                 _uiState.update { it.copy(isLoading = false, isLoginSuccess = true) }
 
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 Log.e("LoginDebug", "Firebase Failed: ${e.message}", e)
                 // Failure (Wrong password, user not found, etc.)
                 val errorMsg = when {
@@ -101,11 +102,12 @@ class LoginViewModel @Inject constructor(
                     e.message?.contains("network error") == true -> "No internet connection. Please try again"
                     else -> "Login failed. Please try again."
                 }
-                _uiState.update { it.copy(
+                _uiState.update {
+                    it.copy(
                     isLoading = false,
                     errorMessage = errorMsg,
-                    password = ""
-                ) }
+                    password = "")
+                }
             }
         }
     }

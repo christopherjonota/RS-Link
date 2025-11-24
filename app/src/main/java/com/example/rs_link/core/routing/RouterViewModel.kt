@@ -2,6 +2,7 @@ package com.example.rs_link.core.routing
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rs_link.data.repository.UserRepository
 import com.example.rs_link.domain.repository.AuthRepository
 import com.example.rs_link.domain.repository.UserPrefsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,7 @@ sealed class Destination {
 
 @HiltViewModel
 class RouterViewModel @Inject constructor(
-    private val authRepository: AuthRepository, // used to check if the user is currently logged in
+    private val userRepository: UserRepository, // used to check if the user is currently logged in
     private val userPrefsRepository: UserPrefsRepository // used to check if the user is already done in onboarding
 ) : ViewModel() {
 
@@ -43,7 +44,7 @@ class RouterViewModel @Inject constructor(
 
             // Fetch required states from repositories
             val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding().first()
-            val isLoggedIn = authRepository.isLoggedIn().first()
+            val isLoggedIn = userRepository.isUserLoggedIn()
 
             // Implement priority routing logic
             _destination.value = when {

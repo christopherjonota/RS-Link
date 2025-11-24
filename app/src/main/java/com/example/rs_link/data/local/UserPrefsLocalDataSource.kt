@@ -14,8 +14,4 @@ interface UserPrefsLocalDataSource{
     fun getThemeMode(): Flow<String>
     suspend fun setThemeMode(mode: String)
 
-    // Log In
-    fun isLoggedin(): Flow<Boolean>
-    suspend fun setLoggedIn(isLoggedIn : Boolean)
-
 }
