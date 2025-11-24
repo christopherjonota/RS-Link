@@ -79,7 +79,7 @@ fun AuthScreen (
         if (uiState.errorMessage != null) {
             // Wait 3 seconds, then clear the error
             delay(3000)
-            viewModel.onErrorShown() // This will reset the error to null
+            viewModel.clearErrorShown() // This will reset the error to null
         }
     }
 
@@ -164,7 +164,7 @@ fun AuthScreen (
 
     TopErrorNotificationPopup(
         errorMessage = uiState.errorMessage,
-        onDismiss = { viewModel.onErrorShown() }
+        onDismiss = { viewModel.clearErrorShown() }
     )
 
     // Main container
