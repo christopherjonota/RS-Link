@@ -29,7 +29,6 @@ class AuthActivity : ComponentActivity(){
                         navigateToDashboard()
                     }
                 )
-
             }
         }
 

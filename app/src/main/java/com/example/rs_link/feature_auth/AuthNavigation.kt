@@ -13,7 +13,6 @@ import com.example.rs_link.feature_auth.registration.RegistrationViewModel
 object Screen{
     const val REGISTRATION = "registration"
     const val AUTH = "auth"
-    const val SIGNIN = "signin"
 }
 
 @Composable
@@ -29,16 +28,16 @@ fun AuthNavigation(
         startDestination = Screen.AUTH  // Start the navigation to the starting part
     ){
 
-        // Destination for starting point
-        composable(
+        // Auth Screen Route
+        composable( // Destination for starting point
             route = Screen.AUTH,
             exitTransition = {
                 slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start,
                     animationSpec = tween(700),
                 )
-            })
-        {
+            }
+        ) {
             AuthScreen(
                 viewModel = loginViewModel,
                 onNavigateToRegistration = {
@@ -52,7 +51,7 @@ fun AuthNavigation(
             )
         }
 
-
+        // Registration Route
         composable(
             route = Screen.REGISTRATION,
             exitTransition = {
@@ -69,7 +68,6 @@ fun AuthNavigation(
                 )
             })
         {
-
             RegistrationScreen(
                 onNavigateBack = {
                     navController.popBackStack(
