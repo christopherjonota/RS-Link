@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rs_link.feature_auth.registration.RegistrationScreen
-import com.example.rs_link.feature_auth.login.SignInViewModel
+import com.example.rs_link.feature_auth.login.LoginViewModel
 import com.example.rs_link.feature_auth.registration.RegistrationViewModel
 
 object Screen{
@@ -18,7 +18,7 @@ object Screen{
 
 @Composable
 fun AuthNavigation(
-    loginViewModel: SignInViewModel,
+    loginViewModel: LoginViewModel,
     registrationViewModel: RegistrationViewModel,
     onLoginSuccess: () -> Unit
 ){

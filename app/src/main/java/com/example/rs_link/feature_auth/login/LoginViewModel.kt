@@ -29,7 +29,7 @@ data class LoginUiState(
 
 
 @HiltViewModel
-class SignInViewModel @Inject constructor(
+class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel(){
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -101,7 +101,7 @@ class SignInViewModel @Inject constructor(
             }
         }
     }
-    fun resetState() {
+    fun resetUiState() {
         // Replaces the current state with default (empty) values
         _uiState.update { LoginUiState() }
     }

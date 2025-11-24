@@ -4,21 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.rs_link.core.ui.theme.ThemeRSLink
-import com.example.rs_link.feature_auth.login.SignInViewModel
+import com.example.rs_link.feature_auth.login.LoginViewModel
 import com.example.rs_link.feature_auth.registration.RegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import android.content.Intent
 import com.example.rs_link.feature_dashboard.DashboardActivity
 
 @AndroidEntryPoint
 class AuthActivity : ComponentActivity(){
 
-    private val loginViewModel: SignInViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private val registrationViewModel: RegistrationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
