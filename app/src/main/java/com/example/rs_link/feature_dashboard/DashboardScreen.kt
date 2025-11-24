@@ -1,4 +1,4 @@
-package com.example.rs_link.feature_dashboard.ui
+package com.example.rs_link.feature_dashboard
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

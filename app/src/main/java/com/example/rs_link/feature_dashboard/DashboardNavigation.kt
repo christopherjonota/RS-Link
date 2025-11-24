@@ -1,4 +1,4 @@
-package com.example.rs_link.feature_dashboard.ui
+package com.example.rs_link.feature_dashboard
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -12,7 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
+import com.example.rs_link.feature_dashboard.home.HomeScreen
 
 
 sealed class DashboardRoute(val route: String, val title: String, val icon: ImageVector) {
@@ -34,9 +34,7 @@ fun DashboardNavigation(
     ) {
 
         composable(DashboardRoute.Home.route) {
-            // HomeScreen()
-            // Mock content for now
-            androidx.compose.material3.Text("Home Screen Content")
+            HomeScreen()
         }
 
         composable(DashboardRoute.History.route) {
