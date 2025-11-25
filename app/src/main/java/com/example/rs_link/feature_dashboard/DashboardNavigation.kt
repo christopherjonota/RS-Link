@@ -1,6 +1,9 @@
 package com.example.rs_link.feature_dashboard
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
 import com.example.rs_link.feature_dashboard.home.HomeScreen
 
 
@@ -30,7 +35,9 @@ fun DashboardNavigation(
     NavHost(
         navController = navController,
         startDestination = DashboardRoute.Home.route,
-        modifier = Modifier.padding(paddingValues) // Apply padding here
+        modifier = Modifier
+            .padding(paddingValues) // Apply padding here
+            .background(Color.Red)
     ) {
 
         composable(DashboardRoute.Home.route) {

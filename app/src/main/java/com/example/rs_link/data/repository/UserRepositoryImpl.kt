@@ -44,11 +44,19 @@ class UserRepositoryImpl @Inject constructor(
     }
     override suspend fun getUserProfile(userId: String): User? {
         // Fetch the document from Firestore and convert it to your User object
-        return firestore.collection("users")
-            .document(userId)
-            .get()
-            .await()
-            .toObject(User::class.java)
+        return try {
+            // Go to "users" collection -> find document with userId -> fetch it
+            val snapshot = firestore.collection("users")
+                .document(userId)
+                .get()
+                .await() // Suspends until data is ready
+
+            // Convert the JSON document into your Kotlin 'User' object
+            snapshot.toObject(User::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null // Return null if network fails
+        }
     }
 
     override suspend fun updateUserProfile(user: User) {
