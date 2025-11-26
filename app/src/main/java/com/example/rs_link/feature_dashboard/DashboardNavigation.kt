@@ -23,8 +23,10 @@ import com.example.rs_link.feature_dashboard.settings.SettingsScreen
 
 sealed class DashboardRoute(val route: String, val title: String, val icon: ImageVector) {
     object Home : DashboardRoute("home", "Home", Icons.Default.Home)
-    object History : DashboardRoute("history", "Rides", Icons.Default.AccountBox)
+    object Riding : DashboardRoute("riding", "Riding", Icons.Default.AccountBox)
     object Settings : DashboardRoute("settings", "Settings", Icons.Default.Person)
+    object Safety: DashboardRoute("safety", "Safety", Icons.Default.Person)
+    object Location: DashboardRoute("location", "Location", Icons.Default.Person)
 }
 
 
@@ -46,7 +48,7 @@ fun DashboardNavigation(
             HomeScreen()
         }
 
-        composable(DashboardRoute.History.route) {
+        composable(DashboardRoute.Riding.route) {
             // HistoryScreen()
             androidx.compose.material3.Text("Ride History Content")
         }

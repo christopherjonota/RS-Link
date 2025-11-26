@@ -23,7 +23,9 @@ fun DashboardScreen (
     // Define the tabs for the bottom bar
     val bottomNavItems = listOf(
         DashboardRoute.Home,
-        DashboardRoute.History,
+        DashboardRoute.Riding,
+        DashboardRoute.Safety,
+        DashboardRoute.Location,
         DashboardRoute.Settings
     )
     Scaffold(
