@@ -24,7 +24,7 @@ fun DashboardScreen (
     val bottomNavItems = listOf(
         DashboardRoute.Home,
         DashboardRoute.History,
-        DashboardRoute.Profile
+        DashboardRoute.Settings
     )
     Scaffold(
         bottomBar = {
@@ -58,7 +58,9 @@ fun DashboardScreen (
         // Call your separate Navigation file
         DashboardNavigation(
             navController = navController,
-            paddingValues = innerPadding
+            paddingValues = innerPadding,
+
+            onLogOut = onLogout
         )
     }
 }

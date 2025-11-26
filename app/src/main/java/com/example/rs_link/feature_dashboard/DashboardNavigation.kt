@@ -18,12 +18,13 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import com.example.rs_link.feature_dashboard.home.HomeScreen
+import com.example.rs_link.feature_dashboard.settings.SettingsScreen
 
 
 sealed class DashboardRoute(val route: String, val title: String, val icon: ImageVector) {
     object Home : DashboardRoute("home", "Home", Icons.Default.Home)
     object History : DashboardRoute("history", "Rides", Icons.Default.AccountBox)
-    object Profile : DashboardRoute("profile", "Profile", Icons.Default.Person)
+    object Settings : DashboardRoute("settings", "Settings", Icons.Default.Person)
 }
 
 
@@ -31,6 +32,7 @@ sealed class DashboardRoute(val route: String, val title: String, val icon: Imag
 fun DashboardNavigation(
     navController: NavHostController,
     paddingValues: PaddingValues, // <--- Crucial! Passed from Scaffold
+    onLogOut: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -49,8 +51,10 @@ fun DashboardNavigation(
             androidx.compose.material3.Text("Ride History Content")
         }
 
-        composable(DashboardRoute.Profile.route) {
-            // ProfileScreen()
+        composable(DashboardRoute.Settings.route) {
+            SettingsScreen(
+                onLogOut = onLogOut
+            )
             androidx.compose.material3.Text("Profile Content")
         }
     }
