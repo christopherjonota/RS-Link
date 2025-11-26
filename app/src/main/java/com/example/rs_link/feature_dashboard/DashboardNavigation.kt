@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import com.example.rs_link.feature_dashboard.home.HomeScreen
+import com.example.rs_link.feature_dashboard.safety.SafetyScreen
 import com.example.rs_link.feature_dashboard.settings.SettingsScreen
 
 
@@ -41,13 +42,17 @@ fun DashboardNavigation(
         startDestination = DashboardRoute.Home.route,
         modifier = Modifier
             .padding(paddingValues) // Apply padding here
-            .background(Color.Red)
+            .background(color = MaterialTheme.colorScheme.surface)
     ) {
+
 
         composable(DashboardRoute.Home.route) {
             HomeScreen()
         }
 
+        composable(DashboardRoute.Safety.route){
+            SafetyScreen()
+        }
         composable(DashboardRoute.Riding.route) {
             // HistoryScreen()
             androidx.compose.material3.Text("Ride History Content")

@@ -9,7 +9,7 @@ val DefaultScheme = lightColorScheme(
     primaryContainer = Color(0xFFF2E3D5),   // used for primary surfaces
     onPrimaryContainer = Color(0xFF212121), // for texts on those surfaces
 
-    secondary = Color(0xFFF2E3D5),
+    secondary = Color(0xFFFAFAFA),
     onSecondary = Color(0xFFF2E3D5),
 //    secondaryContainer = Color(),
 //    onSecondaryContainer = Color(),
@@ -22,7 +22,7 @@ val DefaultScheme = lightColorScheme(
     background = Color(0xFF012E40),
     onBackground = Color(0xFFFAFAFA),
 //
-    surface = Color(0xFFFAFAFA),
+    surface = Color(0xFFE5E5E5),
     onSurface = Color(0xFF1D1B20),
 
 

@@ -30,7 +30,7 @@ fun DashboardScreen (
     )
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(modifier = Modifier.background(MaterialTheme.colorScheme.secondary)) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
@@ -51,8 +51,10 @@ fun DashboardScreen (
                                 // 3. Restore state when reselecting
                                 restoreState = true
                             }
-                        }
-                    )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = MaterialTheme.colorScheme.primary,
+                        ))
                 }
             }
         }
