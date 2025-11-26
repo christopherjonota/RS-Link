@@ -1,5 +1,11 @@
 package com.example.rs_link.feature_dashboard.home
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothDevice
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,10 +19,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,6 +33,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.SideEffect
 import androidx.core.view.WindowCompat
-
+import androidx.compose.foundation.lazy.items
 @Composable
 fun HomeScreen (
     viewModel: HomeViewModel = hiltViewModel(),
@@ -136,6 +145,11 @@ fun HomeScreen (
                         .height(250.dp),
                     shape = RoundedCornerShape(12.dp)
                 ){
+                    Button(
+                        onClick = {}
+                    ) {
+                        Text("connect")
+                    }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -166,6 +180,88 @@ fun HomeScreen (
     }
 }
 
+
+@SuppressLint("MissingPermission")
+@Composable
+fun BluetoothDeviceListDialog(
+    viewModel: BluetoothViewModel = hiltViewModel(),
+    onDismiss: () -> Unit
+) {
+    val devices by viewModel.scannedDevices.collectAsState()
+    val isScanning by viewModel.isScanning.collectAsState()
+
+    // --- PERMISSION LAUNCHER ---
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        // If permissions granted, start scan
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            viewModel.startScan()
+        }
+    }
+
+    // Request permissions immediately when dialog opens
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionLauncher.launch(arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ))
+        } else {
+            permissionLauncher.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ))
+        }
+    }
+
+    // --- THE DIALOG ---
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Connect to RS-LINK") },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp) // Limit height
+            ) {
+                if (isScanning) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Scanning for nearby devices...", style = MaterialTheme.typography.bodySmall)
+                } else if (devices.isEmpty()) {
+                    Text("No RS-LINK devices found.", color = Color.Gray)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // THE LIST OF FILTERED DEVICES
+                LazyColumn {
+                    items(devices) { device ->
+                        ListItem(
+                            headlineContent = { Text(device.name ?: "Unknown") },
+                            supportingContent = { Text(device.address) },
+                            leadingContent = {
+                                Icon(Icons.Default.Person, contentDescription = null)
+                            },
+                            modifier = Modifier.clickable {
+                                viewModel.connectToDevice(device)
+                                onDismiss()
+                            }
+                        )
+                        HorizontalDivider()
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { viewModel.stopScan(); onDismiss() }) {
+                Text("Cancel")
+            }
+        }
+    )}
 // --- HELPER COMPONENT FOR BUTTONS ---
 @Composable
 fun QuickActionItem(
