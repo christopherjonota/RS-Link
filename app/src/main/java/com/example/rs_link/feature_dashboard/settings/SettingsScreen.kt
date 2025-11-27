@@ -48,17 +48,18 @@ fun SettingsScreen (
             Column(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
             ) {
-                SafetyScreenItem("Crash Detection & Alert")
+                SafetyScreenItem("Crash Detection & Alert", onClick = {})
                 Spacer(Modifier.height(20.dp))
-                SafetyScreenItem("Emergency Contacts", "0 contacts added")
+                SafetyScreenItem("Emergency Contacts", "0 contacts added", onClick = {})
                 Spacer(Modifier.height(20.dp))
-                SafetyScreenItem("Crash Detection & Alert")
+                SafetyScreenItem("Crash Detection & Alert", onClick = {})
                 Spacer(Modifier.height(20.dp))
-                SafetyScreenItem("Emergency Contacts", "0 contacts added")
+                SafetyScreenItem("Emergency Contacts", "0 contacts added", onClick = {})
                 Button(
-                    onClick = {viewModel.logout(onLogOut = onLogOut)}
+                    onClick = {viewModel.logout(onLogOut = onLogOut)},
+                    modifier = Modifier.fillMaxWidth().height(40.dp)
                 ) {
-                    Text("hello")
+                    Text("Log Out")
                 }
             }
 

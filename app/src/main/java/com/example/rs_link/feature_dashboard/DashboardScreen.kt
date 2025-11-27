@@ -32,9 +32,9 @@ fun DashboardScreen (
     // Define the tabs for the bottom bar
     val bottomNavItems = listOf(
         DashboardRoute.Home,
+        DashboardRoute.Location,
         DashboardRoute.Riding,
         DashboardRoute.Safety,
-        DashboardRoute.Location,
         DashboardRoute.Settings
     )
     Scaffold(
@@ -60,7 +60,7 @@ fun DashboardScreen (
                             navController.navigate(screen.route) {
                                 // 1. Pop up to the start destination to avoid stack buildup
                                 popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                                    saveState = false
                                 }
                                 // 2. Avoid multiple copies of the same destination
                                 launchSingleTop = true

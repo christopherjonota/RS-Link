@@ -1,6 +1,8 @@
 package com.example.rs_link.feature_dashboard.safety
 
+import android.media.Image
 import android.widget.Space
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -24,10 +27,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.motion.widget.MotionScene.Transition.TransitionOnClick
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.rs_link.R
+
+
 
 @Composable
-fun SafetyScreen() {
+fun SafetyScreen(
+    viewModel: SafetyViewModel = hiltViewModel(),
+    onNavigateToEmergencyContact: () -> Unit,
+    onNavigateToCrashAlert: ()-> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ){
@@ -52,9 +66,9 @@ fun SafetyScreen() {
             Column(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
             ) {
-                SafetyScreenItem("Crash Detection & Alert")
+                SafetyScreenItem("Crash Detection & Alert", iconLeft = R.drawable.icon_alert, onClick = onNavigateToCrashAlert)
                 Spacer(Modifier.height(20.dp))
-                SafetyScreenItem("Emergency Contacts", "0 contacts added")
+                SafetyScreenItem("Emergency Contacts", "0 contacts added", R.drawable.icon_contact, onNavigateToEmergencyContact)
             }
 
 
@@ -65,12 +79,12 @@ fun SafetyScreen() {
 
 
 @Composable
-fun SafetyScreenItem(title: String? = null, label: String? = null){
+fun SafetyScreenItem(title: String? = null, label: String? = null, iconLeft: Int? = null, onClick:() -> Unit){
 
     Card (
         modifier = Modifier.fillMaxWidth().height(80.dp),
         shape = RoundedCornerShape(12.dp),
-        onClick = {}
+        onClick = onClick
     ){
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -81,11 +95,16 @@ fun SafetyScreenItem(title: String? = null, label: String? = null){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null
-                )
-                Spacer(Modifier.width(8.dp))
+                if(iconLeft != null){
+                    Image(
+                        painter = painterResource(id = iconLeft),
+                        contentDescription = null
+                    )
+                    Spacer(Modifier.width(12.dp))
+                }
+
+
+
                 if (title != null){
                     Column {
                         Spacer(Modifier.width(20.dp))
@@ -104,12 +123,9 @@ fun SafetyScreenItem(title: String? = null, label: String? = null){
             }
 
             Icon(
-                imageVector = Icons.Default.Person,
+                imageVector = Icons.Filled.KeyboardArrowRight,
                 contentDescription = null
             )
-
-
-
         }
     }
 }
