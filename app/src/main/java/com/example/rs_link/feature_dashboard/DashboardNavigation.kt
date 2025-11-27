@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.rs_link.R
 import com.example.rs_link.feature_dashboard.home.HomeScreen
+import com.example.rs_link.feature_dashboard.safety.AddEmergencyContactScreen
 import com.example.rs_link.feature_dashboard.safety.EmergencyContactScreen
 import com.example.rs_link.feature_dashboard.safety.SafetyScreen
 import com.example.rs_link.feature_dashboard.safety.SafetyViewModel
@@ -38,6 +39,7 @@ sealed class DashboardRoute(val route: String, val title: String, val icon: Int,
 }
 sealed class SafetyRoute(val route: String){
     object EmergencyContact : SafetyRoute("emergency contact")
+    object AddContact: SafetyRoute("add contact")
 }
 
 @Composable
@@ -82,7 +84,16 @@ fun DashboardNavigation(
         }
 
         composable(SafetyRoute.EmergencyContact.route){
-            EmergencyContactScreen(onNavigateBack = {navController.navigate(DashboardRoute.Safety.route)})
+            EmergencyContactScreen(
+                onNavigateBack = {navController.navigate(DashboardRoute.Safety.route)},
+                onNavigateToAddContact = {navController.navigate(SafetyRoute.AddContact.route)}
+            )
+        }
+
+        composable(SafetyRoute.AddContact.route){
+            AddEmergencyContactScreen(
+                onNavigateBack = { navController.navigate(SafetyRoute.EmergencyContact.route)}
+            )
         }
     }
 }
