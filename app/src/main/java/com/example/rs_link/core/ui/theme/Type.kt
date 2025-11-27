@@ -86,6 +86,11 @@ val AppTypography = Typography(
         fontFamily = nunitoFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = nunitoFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp
     )
 
 
