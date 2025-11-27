@@ -82,7 +82,7 @@ fun DashboardNavigation(
         }
 
         composable(SafetyRoute.EmergencyContact.route){
-            EmergencyContactScreen()
+            EmergencyContactScreen(onNavigateBack = {navController.navigate(DashboardRoute.Safety.route)})
         }
     }
 }
