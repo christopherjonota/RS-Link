@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.rs_link.R
 import com.example.rs_link.feature_dashboard.home.HomeScreen
+import com.example.rs_link.feature_dashboard.location.HomeMapScreen
 import com.example.rs_link.feature_dashboard.safety.AddEmergencyContactScreen
 import com.example.rs_link.feature_dashboard.safety.EmergencyContactScreen
 import com.example.rs_link.feature_dashboard.safety.SafetyScreen
@@ -75,7 +76,7 @@ fun DashboardNavigation(
             androidx.compose.material3.Text("Ride History Content")
         }
         composable(DashboardRoute.Location.route) {
-            androidx.compose.material3.Text("Ride History Content")
+            HomeMapScreen()
         }
         composable(DashboardRoute.Settings.route) {
             SettingsScreen(

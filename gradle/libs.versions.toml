@@ -32,6 +32,9 @@ firebaseAuthKtx = "24.0.1" # For ViewModel/Fragment extensions
 firebaseBom = "33.1.0"
 googleServicesPlugin = "4.4.4"
 
+play-services-maps = "18.2.0"
+maps-compose = "4.3.0"
+accompanist-permissions = "0.34.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -77,6 +80,10 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 # Notice they have NO version.ref, the BOM handles it!
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref= "maps-compose"}
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps"}
+accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
