@@ -62,7 +62,6 @@ fun DashboardNavigation(
             SettingsScreen(
                 onLogOut = onLogOut
             )
-            androidx.compose.material3.Text("Profile Content")
         }
     }
 }
