@@ -36,6 +36,10 @@ bool crashDetected = false;
 const long CRASH_CONFIRM_TIME = 12000; // 12 seconds
 bool crashConfirmed = false;
 
+const long required_crash_button_hold = 5000;
+bool crashButtonHold = false;
+unsigned long crashButtonPressTime = 0;
+
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
@@ -136,17 +140,11 @@ void bluetooth_setup() {
 
   Serial.println("BLE Initialized. Waiting for connections...");
 
-  const int required_crash_button_hold = 5000;
-  bool crashButtonHold = false;
+ 
 }
 
 void bluetooth_loop() {
   
-  // if (digitalRead(CRASH_BUTTON_PIN) == LOW){
-  //   if (millis() - startTime >= required_crash_button_hold){
-
-  //   }
-  // }
    // Check for physical false alarm button press
   // if (buzzerOn && digitalRead(buttonPin) == LOW && !falseAlarmSent) {
   //   // Debounce delay
@@ -160,9 +158,7 @@ void bluetooth_loop() {
 
   //     // Notify Android of false alarm
   //     Serial.println("S");
-  //     String stop = "S";
-  //     pCharacteristic->setValue(stop.c_str());
-  //   pCharacteristic->notify(); // Sends data to Android
+
   //   }
   // }
   
@@ -191,6 +187,34 @@ void bluetooth_loop() {
           tone(BUZZER_PIN, 1000, 150);
         }
         toneState = !toneState;
+      }
+    }
+
+    if (digitalRead(CRASH_BUTTON_PIN) == LOW){
+      if(crashButtonPressTime == 0){
+        crashButtonPressTime = millis();
+      }
+      else if (millis() - crashButtonPressTime > required_crash_button_hold){
+        if (crashConfirmed == true){
+          String stop = "Confirmed Accident Buzzer End";
+          pCharacteristic->setValue(stop.c_str());
+          pCharacteristic->notify(); // Sends data to Android
+          crashConfirmed = false;
+          buzzerOn = false;
+        }
+        else{
+          String stop = "S";
+          pCharacteristic->setValue(stop.c_str());
+          pCharacteristic->notify(); // Sends data to Android
+          buzzerOn = false;
+        }
+      }
+    }
+    else{
+      if (crashButtonPressTime > 0) {
+        // Button was just released
+        Serial.println("Button released.");
+        crashButtonPressTime = 0; // Reset the timer
       }
     }
   } 
