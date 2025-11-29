@@ -49,6 +49,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.SideEffect
 import androidx.core.view.WindowCompat
 import androidx.compose.foundation.lazy.items
+import com.example.rs_link.R
+
 @Composable
 fun HomeScreen (
     viewModel: HomeViewModel = hiltViewModel(),
@@ -139,16 +141,30 @@ fun HomeScreen (
 
             }
             Column (modifier = Modifier.fillMaxSize().padding(16.dp)){
-                Card (
+                Surface (
+                    shadowElevation = 8.dp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp),
                     shape = RoundedCornerShape(12.dp)
                 ){
-                    Button(
-                        onClick = {}
-                    ) {
-                        Text("connect")
+                    Column{
+                        Text("RS Link")
+                        Row {
+                            Text("Hehheehe")
+                            Image(
+                                painter = painterResource(id = R.drawable.home_screen_illus),
+                                contentDescription = null
+                            )
+                        }
+                        Card {
+                            Text("get yours now")
+                        }
+                        Button(
+                            onClick = {}
+                        ) {
+                            Text("connect")
+                        }
                     }
                 }
                 Row(

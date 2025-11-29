@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 // 2. Google Maps Compose Library (The UI components)
@@ -30,10 +32,19 @@ import com.google.android.gms.maps.model.LatLng
 // 4. Accompanist Permissions (For handling runtime permissions easily)
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeMapScreen() {
+    val context = LocalContext.current
+
+    // 1. Get the Location Client
+    val fusedLocationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
+
+
     // 1. Setup Permission State
     val locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -65,6 +76,27 @@ fun HomeMapScreen() {
         position = CameraPosition.fromLatLngZoom(LatLng(14.5995, 120.9842), 15f)
     }
 
+    // 3. THE MAGIC: Auto-center when permission is granted
+    LaunchedEffect(locationPermissionState.allPermissionsGranted) {
+        if (locationPermissionState.allPermissionsGranted) {
+            try {
+                // Get the last known location (it's fast)
+                val locationResult = fusedLocationClient.lastLocation
+                locationResult.addOnSuccessListener { location ->
+                    if (location != null) {
+                        // Move the camera to the user!
+                        cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                            LatLng(location.latitude, location.longitude),
+                            15f
+                        )
+                    }
+                }
+            } catch (e: SecurityException) {
+                // Handle exception if permission was revoked
+            }
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         if (locationPermissionState.allPermissionsGranted) {
@@ -73,7 +105,7 @@ fun HomeMapScreen() {
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
                 properties = mapProperties,
-                uiSettings = mapUiSettings
+                uiSettings = MapUiSettings(myLocationButtonEnabled = true) // Allow them to re-center
             ) {
                 // You can add Markers here if needed
                 // Marker(state = MarkerState(position = LatLng(...)))

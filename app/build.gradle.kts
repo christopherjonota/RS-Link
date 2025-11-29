@@ -94,5 +94,5 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
     implementation(libs.accompanist.permission)
-
+    implementation(libs.play.services.location)
 }

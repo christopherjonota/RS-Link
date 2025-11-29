@@ -32,7 +32,8 @@ firebaseAuthKtx = "24.0.1" # For ViewModel/Fragment extensions
 firebaseBom = "33.1.0"
 googleServicesPlugin = "4.4.4"
 
-play-services-maps = "18.2.0"
+play-services-location = "21.0.1"
+play-services-maps = "19.2.0"
 maps-compose = "4.3.0"
 accompanist-permissions = "0.34.0"
 [libraries]
@@ -84,7 +85,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref= "maps-compose"}
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps"}
 accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions"}
-
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location"}
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
