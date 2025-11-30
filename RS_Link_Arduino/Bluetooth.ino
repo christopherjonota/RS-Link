@@ -28,7 +28,7 @@ MPU6050 mpu;
 
 // Thresholds
 // 4.0g for testing, 3.5G for more sensitivity
-const float CRASH_THRESHOLD = 5.0; // 4G trigger (adjust based on testing)
+const float CRASH_THRESHOLD = 4.0; // 4G trigger (adjust based on testing)
 const float TILT_THRESHOLD = 0.5;  // If Z-axis is below 0.5g, it's tipped over
 
 unsigned long crashTime = 0;
@@ -36,9 +36,12 @@ bool crashDetected = false;
 const long CRASH_CONFIRM_TIME = 12000; // 12 seconds
 bool crashConfirmed = false;
 
-const long required_crash_button_hold = 5000;
+const long required_crash_button_hold = 2000;
+const long required_manual_crash_button_hold = 5000;
 bool crashButtonHold = false;
 unsigned long crashButtonPressTime = 0;
+
+bool crashAlertSend = false;
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -64,19 +67,19 @@ class MyCallbacks: public BLECharacteristicCallbacks {
         for (int i = 0; i < value.length(); i++) {
           Serial.print(value[i]);
 
-            // This will detect if the sent message matches these
-            if (value[0] == 'B') {  // activates the buzzer pin
-              tone(BUZZER_PIN, 1000);  // set the buzzer frequency to 1000 Hz tone
-              buzzerOn = true;  // set the flag that says the buzzer is turned on
-              falseAlarmSent = false; 
-              Serial.println("Buzzer turned ON via BLE");
-            }
+            // // This will detect if the sent message matches these
+            // if (value[0] == 'B') {  // activates the buzzer pin
+            //   tone(BUZZER_PIN, 1000);  // set the buzzer frequency to 1000 Hz tone
+            //   buzzerOn = true;  // set the flag that says the buzzer is turned on
+            //   falseAlarmSent = false; 
+            //   Serial.println("Buzzer turned ON via BLE");
+            // }
 
-            else if (value[0] == 'S') {
-              noTone(BUZZER_PIN);      // Stop the tone
-              buzzerOn = false;
-              Serial.println("Buzzer turned OFF via BLE");
-            }
+            // else if (value[0] == 'S') {
+            //   noTone(BUZZER_PIN);      // Stop the tone
+            //   buzzerOn = false;
+            //   Serial.println("Buzzer turned OFF via BLE");
+            // }
         }
         Serial.println();
         
@@ -98,7 +101,7 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 };
 
 void bluetooth_setup() {
-   pinMode(CRASH_BUTTON_PIN, INPUT);
+   pinMode(CRASH_BUTTON_PIN, INPUT_PULLUP);
    Wire.begin(6, 7);
   
   mpu.initialize();
@@ -144,29 +147,16 @@ void bluetooth_setup() {
 }
 
 void bluetooth_loop() {
-  
-   // Check for physical false alarm button press
-  // if (buzzerOn && digitalRead(buttonPin) == LOW && !falseAlarmSent) {
-  //   // Debounce delay
-  //   delay(200);
 
-  //   // Confirm button is still pressed
-  //   if (digitalRead(buttonPin) == LOW) {
-  //     digitalWrite(buzzerPin, LOW);
-  //     buzzerOn = false;
-  //     falseAlarmSent = true;
-
-  //     // Notify Android of false alarm
-  //     Serial.println("S");
-
-  //   }
-  // }
   
   if (buzzerOn) {
     if(millis() - crashTime >= CRASH_CONFIRM_TIME){
       crashConfirmed = true;
     }
+
+    // Buzzer sounds for crash
     if(crashConfirmed){
+      // Sound for confirmed crash
       if (millis() - lastToneTime >= 200) {
         if (toneState) {
           tone(BUZZER_PIN, 1800, 150);
@@ -177,8 +167,19 @@ void bluetooth_loop() {
         }
         toneState = !toneState;
       }
+
+      // Send an alert through bluetooth
+      if(crashAlertSend == false){
+        String stop = "Crash Confirmed";
+        pCharacteristic->setValue(stop.c_str());
+        pCharacteristic->notify(); // Sends data to Android
+        Serial.println("Confirmed Crash Alert Sent");
+        crashAlertSend = true;
+      }
+      Serial.println("Crash Confirmed!!!");
     }
     else{
+      // Sound for detected crash 
       if (millis() - lastToneTime >= 300) { // Change pulse interval here
         lastToneTime = millis();
         if (toneState) {
@@ -188,38 +189,51 @@ void bluetooth_loop() {
         }
         toneState = !toneState;
       }
+      Serial.println("Crash Detected!!!");
     }
 
-    if (digitalRead(CRASH_BUTTON_PIN) == LOW){
-      if(crashButtonPressTime == 0){
-        crashButtonPressTime = millis();
-      }
-      else if (millis() - crashButtonPressTime > required_crash_button_hold){
-        if (crashConfirmed == true){
-          String stop = "Confirmed Accident Buzzer End";
-          pCharacteristic->setValue(stop.c_str());
-          pCharacteristic->notify(); // Sends data to Android
-          crashConfirmed = false;
-          buzzerOn = false;
-        }
-        else{
-          String stop = "S";
-          pCharacteristic->setValue(stop.c_str());
-          pCharacteristic->notify(); // Sends data to Android
-          buzzerOn = false;
-        }
-      }
-    }
-    else{
-      if (crashButtonPressTime > 0) {
-        // Button was just released
-        Serial.println("Button released.");
-        crashButtonPressTime = 0; // Reset the timer
-      }
-    }
   } 
   else {
     noTone(BUZZER_PIN); // Ensure it's off
+  }
+  // Crash button
+  if (digitalRead(CRASH_BUTTON_PIN) == LOW){
+    if(crashButtonPressTime == 0){
+      crashButtonPressTime = millis(); // set the holding time
+    }
+    else if (millis() - crashButtonPressTime > required_crash_button_hold){
+      if(millis() - crashButtonPressTime > required_manual_crash_button_hold && buzzerOn == false && crashConfirmed == false){
+        crashConfirmed = true;
+        buzzerOn = true;
+        String manualAlert = "Manual Alert Activated";
+        pCharacteristic->setValue(manualAlert.c_str());
+        pCharacteristic->notify(); // Sends data to Android
+        Serial.println(manualAlert);
+      }
+      // marks the end of the confirmed crash buzzer
+      else if (crashConfirmed == true){
+        String stop = "Confirmed Accident Buzzer End";
+        pCharacteristic->setValue(stop.c_str());
+        pCharacteristic->notify(); // Sends data to Android
+        crashConfirmed = false;
+        buzzerOn = false;
+        Serial.println("Stopped at crash confirm");
+        crashAlertSend = false;
+      }
+
+      // marks the end of the crash detected
+      else if (crashConfirmed == false && buzzerOn == true){
+        buzzerOn = false;
+        Serial.println("Stopped at crash detection");
+      }
+    }
+  }
+  else{ // reset the holding state of the button
+    if (crashButtonPressTime > 0) {
+      // Button was just released
+      Serial.println("Button released.");
+      crashButtonPressTime = 0; // Reset the timer
+    }
   }
   int16_t ax, ay, az;
     mpu.getAcceleration(&ax, &ay, &az);
@@ -273,13 +287,13 @@ void bluetooth_loop() {
   pCharacteristic->notify(); // Sends data to Android
 
   // Send data in a simple CSV format
-  Serial.println(
-      String(ax_g, 3) + "," + 
-      String(ay_g, 3) + "," + 
-      String(az_g, 3));
+  // Serial.println(
+  //     String(ax_g, 3) + "," + 
+  //     String(ay_g, 3) + "," + 
+  //     String(az_g, 3));
 
-    // Debug output
-   Serial.println(sensorData1);
+  //   // Debug output
+  //  Serial.println(sensorData1);
     
     delay(20); // ~50Hz sampling (better than 500ms)
 

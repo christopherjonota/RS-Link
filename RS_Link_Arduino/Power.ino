@@ -57,10 +57,15 @@ void power_setup(){
   pinMode(BUZZER_PIN, OUTPUT);
   digitalWrite(BUZZER_PIN, LOW); // Make sure it's off by default
 
+  // Power on beeping
   // Beep the buzzer to signal "ON"
-  digitalWrite(BUZZER_PIN, HIGH); // Turn buzzer on
-  delay(100);                     // Beep for 100 milliseconds (0.1 sec)
-  digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer off
+  digitalWrite(BUZZER_PIN, HIGH); 
+  delay(50); // Short first beep
+  digitalWrite(BUZZER_PIN, LOW); 
+  delay(50); // Short pause
+  digitalWrite(BUZZER_PIN, HIGH);
+  delay(100); // Slightly longer second beep
+  digitalWrite(BUZZER_PIN, LOW);
 
 
   // ------------------------------------------
@@ -85,9 +90,14 @@ void power_loop(){
       Serial.println("Button pressed...");
     } 
     else if (millis() - buttonPressTime > SHUTDOWN_HOLD_TIME) { // detects if the button pressed for the required shutdown time
-      digitalWrite(BUZZER_PIN, HIGH); // Turn buzzer on
-      delay(100);                     // Beep for 100 milliseconds (0.1 sec)
-      digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer off
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(400); // Beep for half a second
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(100);
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(200);
+       // Beep for half a second
+      digitalWrite(BUZZER_PIN, LOW);
       // Button has been held long enough to trigger shutdown
       shutdown();
     }
