@@ -33,7 +33,7 @@ object BluetoothConstants {
     const val SERVICE_UUID = "12345678-1234-5678-1234-56789abcdef0"
     // 2. The Characteristic UUID (The specific value you want to read/notify)
     // You must add this to your ESP32 code too!
-    const val CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+    const val CHARACTERISTIC_UUID = "abcdef01-1234-5678-1234-56789abcdef0"
 
     // 3. Android Standard UUID for "Client Characteristic Configuration"
     // This never changes. It is used to turn on notifications.

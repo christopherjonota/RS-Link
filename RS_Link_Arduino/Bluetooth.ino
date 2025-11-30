@@ -138,8 +138,20 @@ void bluetooth_setup() {
   pService->start();
   Serial.println("Service started");
 
-  // Start advertising
-  pServer->getAdvertising()->start();
+  // 1. Get the Advertising Object
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+
+  // 2. IMPORTANT: Add the Service UUID to the advertisement
+  // Without this, your Android ScanFilter will ignore the device!
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+
+  // 3. Set visual settings (Optional but recommended)
+  pAdvertising->setScanResponse(true);
+  pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
+  pAdvertising->setMaxPreferred(0x12);
+
+  // 4. Start Advertising
+  BLEDevice::startAdvertising();
 
   Serial.println("BLE Initialized. Waiting for connections...");
 
