@@ -190,7 +190,7 @@ fun HomeScreen (
                         }
 
                         // Right: Connect/Disconnect Button
-                        if (connectionStatus == "Connected") {
+                        if (connectionStatus == "Connected!") {
                             Button(
                                 onClick = { bluetoothViewModel.disconnect() },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
