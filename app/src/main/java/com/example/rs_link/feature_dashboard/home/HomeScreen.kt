@@ -3,6 +3,7 @@ package com.example.rs_link.feature_dashboard.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.graphics.fonts.FontStyle
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,12 +50,18 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.SideEffect
 import androidx.core.view.WindowCompat
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.rs_link.R
 
 @Composable
 fun HomeScreen (
     viewModel: HomeViewModel = hiltViewModel(),
 ){
+    var showBluetoothDialog by remember { mutableStateOf(false) }
+
     val userName by viewModel.userName.collectAsState()
     val hasNotifications by viewModel.hasNotifications.collectAsState()
     // ROOT CONTAINER: Handles Layering
@@ -160,10 +167,17 @@ fun HomeScreen (
                         Card {
                             Text("get yours now")
                         }
-                        Button(
-                            onClick = {}
-                        ) {
-                            Text("connect")
+
+
+                        if (showBluetoothDialog) {
+                            BluetoothDeviceListDialog(
+                                onDismiss = { showBluetoothDialog = false }
+                            )
+                        }
+
+                        // ... Header Row ...
+                        IconButton(onClick = { showBluetoothDialog = true }) {
+                            Icon(Icons.Default.Phone, contentDescription = "Connect")
                         }
                     }
                 }
@@ -197,87 +211,6 @@ fun HomeScreen (
 }
 
 
-@SuppressLint("MissingPermission")
-@Composable
-fun BluetoothDeviceListDialog(
-    viewModel: BluetoothViewModel = hiltViewModel(),
-    onDismiss: () -> Unit
-) {
-    val devices by viewModel.scannedDevices.collectAsState()
-    val isScanning by viewModel.isScanning.collectAsState()
-
-    // --- PERMISSION LAUNCHER ---
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        // If permissions granted, start scan
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            viewModel.startScan()
-        }
-    }
-
-    // Request permissions immediately when dialog opens
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            permissionLauncher.launch(arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ))
-        } else {
-            permissionLauncher.launch(arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN
-            ))
-        }
-    }
-
-    // --- THE DIALOG ---
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Connect to RS-LINK") },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp) // Limit height
-            ) {
-                if (isScanning) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Scanning for nearby devices...", style = MaterialTheme.typography.bodySmall)
-                } else if (devices.isEmpty()) {
-                    Text("No RS-LINK devices found.", color = Color.Gray)
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // THE LIST OF FILTERED DEVICES
-                LazyColumn {
-                    items(devices) { device ->
-                        ListItem(
-                            headlineContent = { Text(device.name ?: "Unknown") },
-                            supportingContent = { Text(device.address) },
-                            leadingContent = {
-                                Icon(Icons.Default.Person, contentDescription = null)
-                            },
-                            modifier = Modifier.clickable {
-                                viewModel.connectToDevice(device)
-                                onDismiss()
-                            }
-                        )
-                        HorizontalDivider()
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { viewModel.stopScan(); onDismiss() }) {
-                Text("Cancel")
-            }
-        }
-    )}
 // --- HELPER COMPONENT FOR BUTTONS ---
 @Composable
 fun QuickActionItem(
@@ -311,4 +244,75 @@ fun QuickActionItem(
             fontWeight = FontWeight.SemiBold
         )
     }
+}
+
+@SuppressLint("MissingPermission")
+@Composable
+fun BluetoothDeviceListDialog(
+    viewModel: BluetoothViewModel = hiltViewModel(),
+    onDismiss: () -> Unit
+) {
+    val devices by viewModel.scannedDevices.collectAsState()
+    val isScanning by viewModel.isScanning.collectAsState()
+
+    // --- PERMISSION LAUNCHER ---
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions.values.all { it }) {
+            viewModel.startScan()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        // Request permissions specific to Android 12+ or older
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
+        } else {
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        permissionLauncher.launch(permissions)
+    }
+
+    AlertDialog(
+        onDismissRequest = {
+            viewModel.stopScan()
+            onDismiss()
+        },
+        title = { Text("Connect to Device") },
+        text = {
+            Column(modifier = Modifier.width(300.dp)) {
+                if (isScanning) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Text("Searching for hardware...", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (devices.isEmpty() && !isScanning) {
+                    Text("No devices found.")
+                }
+
+                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
+                    items(devices) { device ->
+                        ListItem(
+                            headlineContent = { Text(device.name ?: "Unknown Device") },
+                            supportingContent = { Text(device.address) },
+                            leadingContent = { Icon(Icons.Default.Phone, null) },
+                            modifier = Modifier.clickable {
+                                viewModel.connectToDevice(device) // Your connection logic
+                                onDismiss()
+                            }
+                        )
+                        HorizontalDivider()
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { viewModel.stopScan(); onDismiss() }) {
+                Text("Cancel")
+            }
+        }
+    )
 }
