@@ -59,8 +59,13 @@ class BluetoothViewModel @Inject constructor(
     private val scanner = adapter.bluetoothLeScanner
 
     private var bluetoothGatt: BluetoothGatt? = null
+
+    // UI STATE FOR STATUS
     private val _connectionStatus = MutableStateFlow("Disconnected")
     val connectionStatus = _connectionStatus.asStateFlow()
+
+    private val _receivedData = MutableStateFlow("Waiting for data...")
+    val receivedData = _receivedData.asStateFlow()
 
     private val gattCallback = object : BluetoothGattCallback() {
 
@@ -68,12 +73,12 @@ class BluetoothViewModel @Inject constructor(
         @SuppressLint("MissingPermission")
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                _connectionStatus.value = "Connected! Discovering Services..."
+                _connectionStatus.value = "Connected!"
                 // CRITICAL: You must discover services immediately after connecting
                 gatt.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 _connectionStatus.value = "Disconnected"
-                bluetoothGatt?.close()
+                gatt.close()
                 bluetoothGatt = null
             }
         }
@@ -82,7 +87,6 @@ class BluetoothViewModel @Inject constructor(
         @SuppressLint("MissingPermission")
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                _connectionStatus.value = "Services Ready. Enabling Data..."
                 enableNotifications(gatt)
             }
         }
@@ -94,8 +98,11 @@ class BluetoothViewModel @Inject constructor(
             value: ByteArray // For newer Android versions
         ) {
             // Parse the data (e.g., String or Int)
-            val dataString = String(value)
-            Log.d("BluetoothData", "Received: $dataString")
+            val message = String(value, Charsets.UTF_8)
+            Log.d("BluetoothData", "Received: $message")
+
+            // B. Update the UI State
+            _receivedData.update { message }
             // _connectionStatus.value = "Data: $dataString" // Optional: Update UI
         }
     }
@@ -140,7 +147,12 @@ class BluetoothViewModel @Inject constructor(
     // 4. CLEANUP
     @SuppressLint("MissingPermission")
     fun disconnect() {
-        bluetoothGatt?.disconnect()
+        if (bluetoothGatt != null) {
+            _connectionStatus.value = "Disconnecting..."
+            bluetoothGatt?.disconnect()
+        } else {
+            _connectionStatus.value = "Disconnected"
+        }
     }
 
     override fun onCleared() {

@@ -15,6 +15,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,13 +55,26 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.sp
 import com.example.rs_link.R
 
 @Composable
 fun HomeScreen (
     viewModel: HomeViewModel = hiltViewModel(),
+    bluetoothViewModel: BluetoothViewModel = hiltViewModel()
 ){
     var showBluetoothDialog by remember { mutableStateOf(false) }
+
+    // 1. Observe the status
+    val connectionStatus by bluetoothViewModel.connectionStatus.collectAsState()
+    val receivedData by bluetoothViewModel.receivedData.collectAsState()
+
+    // Determine color based on status text
+    val statusColor = when (connectionStatus) {
+        "Connected" -> Color.Green
+        "Connecting..." -> Color.Yellow
+        else -> Color.Red
+    }
 
     val userName by viewModel.userName.collectAsState()
     val hasNotifications by viewModel.hasNotifications.collectAsState()
@@ -175,12 +189,35 @@ fun HomeScreen (
                             )
                         }
 
-                        // ... Header Row ...
-                        IconButton(onClick = { showBluetoothDialog = true }) {
-                            Icon(Icons.Default.Phone, contentDescription = "Connect")
+                        // Right: Connect/Disconnect Button
+                        if (connectionStatus == "Connected") {
+                            Button(
+                                onClick = { bluetoothViewModel.disconnect() },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Text("Disconnect", fontSize = 12.sp)
+                            }
+                        } else {
+                            // Show "Connect" button or Icon to open Scanner Dialog
+                            Button(
+                                onClick = { showBluetoothDialog = true },
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Text("Connect", fontSize = 12.sp)
+                            }
                         }
+
+                        Text(
+                            text = "Status: $connectionStatus",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
+                // 2. Show the Card
+                LiveDataCard(data = receivedData)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -315,4 +352,42 @@ fun BluetoothDeviceListDialog(
             }
         }
     )
+}
+@Composable
+fun LiveDataCard(
+    data: String
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Phone, // Or Icons.Default.Bolt
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Live Device Data",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // The Actual Text from ESP32
+            Text(
+                text = data,
+                style = MaterialTheme.typography.headlineMedium, // Big text
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
 }

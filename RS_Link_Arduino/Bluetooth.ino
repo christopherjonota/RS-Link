@@ -217,14 +217,14 @@ void bluetooth_loop() {
       if(millis() - crashButtonPressTime > required_manual_crash_button_hold && buzzerOn == false && crashConfirmed == false){
         crashConfirmed = true;
         buzzerOn = true;
-        String manualAlert = "Manual Alert Activated";
+        String manualAlert = "Manual Alert";
         pCharacteristic->setValue(manualAlert.c_str());
         pCharacteristic->notify(); // Sends data to Android
         Serial.println(manualAlert);
       }
       // marks the end of the confirmed crash buzzer
       else if (crashConfirmed == true){
-        String stop = "Confirmed Accident Buzzer End";
+        String stop = "Confirmed Accident";
         pCharacteristic->setValue(stop.c_str());
         pCharacteristic->notify(); // Sends data to Android
         crashConfirmed = false;
@@ -279,7 +279,7 @@ void bluetooth_loop() {
             buzzerOn = true;
             
              // Send "C" for Crash to Android App
-             String crashMsg = "C:CRASH_DETECTED";
+             String crashMsg = "CRASH_DETECTED";
              pCharacteristic->setValue(crashMsg.c_str());
              pCharacteristic->notify();
         } else {
@@ -295,8 +295,7 @@ void bluetooth_loop() {
         String(ay_g, 3) + "," + 
         String(az_g, 3);
 
-  pCharacteristic->setValue(sensorData1.c_str());
-  pCharacteristic->notify(); // Sends data to Android
+
 
   // Send data in a simple CSV format
   // Serial.println(
