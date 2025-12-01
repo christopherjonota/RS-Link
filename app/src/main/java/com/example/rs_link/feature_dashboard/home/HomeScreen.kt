@@ -319,35 +319,64 @@ fun BluetoothDeviceListDialog(
         title = { Text("Connect to Device") },
         text = {
             Column(modifier = Modifier.width(300.dp)) {
+                // 1. STATUS HEADER
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isScanning) {
+                        Text("Scanning...", style = MaterialTheme.typography.bodySmall)
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                    } else {
+                        Text("Scan Stopped", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 if (isScanning) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    Text("Searching for hardware...", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (devices.isEmpty() && !isScanning) {
-                    Text("No devices found.")
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No devices found.")
+                    }
                 }
-
-                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
-                    items(devices) { device ->
-                        ListItem(
-                            headlineContent = { Text(device.name ?: "Unknown Device") },
-                            supportingContent = { Text(device.address) },
-                            leadingContent = { Icon(Icons.Default.Phone, null) },
-                            modifier = Modifier.clickable {
-                                viewModel.connectToDevice(device) // Your connection logic
-                                onDismiss()
-                            }
-                        )
-                        HorizontalDivider()
+                else {
+                    LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
+                        items(devices) { device ->
+                            ListItem(
+                                headlineContent = { Text(device.name ?: "Unknown Device") },
+                                supportingContent = { Text(device.address) },
+                                leadingContent = { Icon(Icons.Default.Phone, null) },
+                                modifier = Modifier.clickable {
+                                    viewModel.connectToDevice(device)
+                                    onDismiss()
+                                }
+                            )
+                            HorizontalDivider()
+                        }
                     }
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = { viewModel.stopScan(); onDismiss() }) {
+            // Only show "Scan Again" if we are NOT currently scanning
+            if (!isScanning) {
+                TextButton(onClick = { viewModel.startScan() }) {
+                    Text("Scan Again")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                viewModel.stopScan()
+                onDismiss()
+            }) {
                 Text("Cancel")
             }
         }
