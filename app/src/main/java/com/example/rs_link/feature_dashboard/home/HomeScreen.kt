@@ -91,6 +91,18 @@ fun HomeScreen (
             notificationPermission.launchPermissionRequest()
         }
     }
+
+    // 1. Prepare the permission request
+    val smsPermissionState = rememberPermissionState(
+        android.Manifest.permission.SEND_SMS
+    )
+
+    // 2. Ask immediately when Home Screen opens
+    LaunchedEffect(Unit) {
+        if (!smsPermissionState.status.isGranted) {
+            smsPermissionState.launchPermissionRequest()
+        }
+    }
     val userName by viewModel.userName.collectAsState()
     val hasNotifications by viewModel.hasNotifications.collectAsState()
     // ROOT CONTAINER: Handles Layering

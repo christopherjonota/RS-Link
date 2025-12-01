@@ -91,7 +91,7 @@ dependencies {
     // 2. Add your Firebase libraries
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-
+    implementation(libs.openlocationcode)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
     implementation(libs.accompanist.permission)

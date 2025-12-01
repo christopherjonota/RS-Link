@@ -25,6 +25,8 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothProfile
+import android.content.pm.PackageManager
+import android.telephony.SmsManager
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
@@ -37,6 +39,7 @@ import com.example.rs_link.feature_dashboard.home.BluetoothConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -103,6 +106,7 @@ class BluetoothLeService : Service() {
             }
             else if (message.contains("Confirmed Accident", ignoreCase = true)){
                 sendAlertNotification("Accident Detected has been Confirmed! Send Help!")
+                sendEmergencySms(message)
             }
         }
     }
@@ -259,5 +263,47 @@ class BluetoothLeService : Service() {
         // Use a unique ID (e.g., System.currentTimeMillis().toInt()) if you want multiple separate notifications.
         // Use a fixed ID (e.g., 2) if you want to update the existing one.
         notificationManager.notify(2, notification)
+    }
+    // 3. The Sending Logic
+    private fun sendEmergencySms(crashData: String) {
+        serviceScope.launch {
+            // A. Get contacts from your database
+            // .first() grabs the current list once and stops listening
+            val contacts = userRepository.getEmergencyContacts().first()
+
+            if (contacts.isEmpty()) {
+                Log.e("BluetoothService", "No contacts to notify!")
+                return@launch
+            }
+
+            // B. Get the SMS Manager (Handles Android Version differences)
+            val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                getSystemService(SmsManager::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                SmsManager.getDefault()
+            }
+
+            // C. Create the message
+            // Tip: Include a Google Maps link if you have location data
+            val smsBody = "SOS! RS-Link detected a crash: $crashData. Please check on me."
+
+            // D. Loop through every contact and send
+            contacts.forEach { contact ->
+                try {
+                    // This uses YOUR SIM card to send the text
+                    smsManager.sendTextMessage(
+                        contact.number, // The recipient's number
+                        null,           // null = use default Service Center
+                        smsBody,        // The text message
+                        null,           // SentIntent (Optional: to know if it sent)
+                        null            // DeliveryIntent (Optional: to know if delivered)
+                    )
+                    Log.i("BluetoothService", "Sent SMS to ${contact.firstName}")
+                } catch (e: Exception) {
+                    Log.e("BluetoothService", "Failed to send to ${contact.number}: ${e.message}")
+                }
+            }
+        }
     }
 }
