@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.navArgument
 import com.example.rs_link.R
 import com.example.rs_link.feature_dashboard.home.HomeScreen
 import com.example.rs_link.feature_dashboard.location.HomeMapScreen
@@ -87,13 +88,27 @@ fun DashboardNavigation(
         composable(SafetyRoute.EmergencyContact.route){
             EmergencyContactScreen(
                 onNavigateBack = {navController.navigate(DashboardRoute.Safety.route)},
-                onNavigateToAddContact = {navController.navigate(SafetyRoute.AddContact.route)}
+                onNavigateToAddContact = {navController.navigate(SafetyRoute.AddContact.route)},
+                onNavigateToEdit = { id -> navController.navigate("contact_form?contactId=$id") },
             )
         }
-
+        composable(
+            route = "contact_form?contactId={contactId}",
+            arguments = listOf(
+                navArgument("contactId") {
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
+            AddEmergencyContactScreen (
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable(SafetyRoute.AddContact.route){
             AddEmergencyContactScreen(
-                onNavigateBack = { navController.navigate(SafetyRoute.EmergencyContact.route)}
+                viewModel = hiltViewModel(),
+                onNavigateBack = { navController.navigate(SafetyRoute.EmergencyContact.route)},
             )
         }
     }

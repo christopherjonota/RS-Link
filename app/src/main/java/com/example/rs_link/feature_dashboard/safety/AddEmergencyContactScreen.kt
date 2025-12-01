@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -49,7 +50,11 @@ fun AddEmergencyContactScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
-
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            onNavigateBack // This calls the navController logic
+        }
+    }
     Scaffold { paddingValues ->
         Box(modifier = Modifier
             .fillMaxSize()

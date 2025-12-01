@@ -1,9 +1,10 @@
 package com.example.rs_link.data.repository
+import com.example.rs_link.data.model.Contact
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.rs_link.data.model.User
 import kotlinx.coroutines.tasks.await
-
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
 
@@ -37,4 +38,9 @@ interface UserRepository {
         lastName: String,
         number: String,
     )
+
+    suspend fun updateEmergencyContact(contact: Contact)
+    suspend fun deleteEmergencyContact(contactId: String)
+    suspend fun getContactById(contactId: String): Contact? // Needed to pre-fill the Edit form
+    fun getEmergencyContacts(): Flow<List<Contact>>
 }

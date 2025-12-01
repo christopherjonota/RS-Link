@@ -24,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +44,9 @@ fun SafetyScreen(
     onNavigateToEmergencyContact: () -> Unit,
     onNavigateToCrashAlert: ()-> Unit
 ) {
+
+    // 1. Observe the count
+    val contactCount by viewModel.contactCount.collectAsState()
     Box(
         modifier = Modifier.fillMaxSize()
     ){
@@ -68,7 +73,7 @@ fun SafetyScreen(
             ) {
                 SafetyScreenItem("Crash Detection & Alert", iconLeft = R.drawable.icon_alert, onClick = onNavigateToCrashAlert)
                 Spacer(Modifier.height(20.dp))
-                SafetyScreenItem("Emergency Contacts", "0 contacts added", R.drawable.icon_contact, onNavigateToEmergencyContact)
+                SafetyScreenItem("Emergency Contacts", "$contactCount contacts added", R.drawable.icon_contact, onNavigateToEmergencyContact)
             }
 
 
@@ -76,7 +81,6 @@ fun SafetyScreen(
     }
 
 }
-
 
 @Composable
 fun SafetyScreenItem(title: String? = null, label: String? = null, iconLeft: Int? = null, onClick:() -> Unit){

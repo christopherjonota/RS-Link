@@ -47,10 +47,37 @@ class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
       Serial.println("Device connected");
+     digitalWrite(BUZZER_PIN, HIGH);
+      delay(50); // Beep 1 (Short)
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(50); // Gap 1
+
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(50); // Beep 2 (Short)
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(50); // Gap 2
+
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(50); // Beep 3 (Short, quick final tap)
+      digitalWrite(BUZZER_PIN, LOW);
     }
 
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(50); // Beep 1 (Short)
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(50); // Gap 1
+
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(50); // Beep 2 (Short)
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(50); // Gap 2
+
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(150); // Beep 3 (Longer final confirmation)
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(200);
       Serial.println("Device disconnected");
       // Restart advertising to be connectable again
       pServer->startAdvertising(); //opens the connection to be connect to it again

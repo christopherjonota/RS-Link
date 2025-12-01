@@ -1,9 +1,13 @@
 package com.example.rs_link.data.repository
 
+import com.example.rs_link.data.model.Contact
 import com.example.rs_link.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -77,8 +81,6 @@ class UserRepositoryImpl @Inject constructor(
 
         // Create the map with separate fields
         val contact = hashMapOf(
-            "firstName" to firstName,
-            "lastName" to lastName,
             "fullName" to "$firstName $lastName", // Optional: Store combined for easy searching later
             "number" to number
         )
@@ -88,5 +90,57 @@ class UserRepositoryImpl @Inject constructor(
             .collection("contacts")
             .add(contact)
             .await()
+    }
+    override fun getEmergencyContacts(): Flow<List<Contact>> = callbackFlow {
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            trySend(emptyList()) // No user, empty list
+            close()
+            return@callbackFlow
+        }
+
+        // Listen to the 'contacts' sub-collection
+        val listener = firestore.collection("users")
+            .document(uid)
+            .collection("contacts")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val contacts = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(Contact::class.java)?.copy(id = doc.id)
+                    }
+                    trySend(contacts) // Send the new list to ViewModel
+                }
+            }
+
+        awaitClose { listener.remove() }
+    }
+
+    override suspend fun updateEmergencyContact(contact: Contact) {
+        val uid = auth.currentUser?.uid ?: return
+        firestore.collection("users").document(uid)
+            .collection("contacts").document(contact.id)
+            .set(contact) // Overwrites with new data
+            .await()
+    }
+
+    override suspend fun deleteEmergencyContact(contactId: String) {
+        val uid = auth.currentUser?.uid ?: return
+        firestore.collection("users").document(uid)
+            .collection("contacts").document(contactId)
+            .delete()
+            .await()
+    }
+
+    override suspend fun getContactById(contactId: String): Contact? {
+        val uid = auth.currentUser?.uid ?: return null
+        return firestore.collection("users").document(uid)
+            .collection("contacts").document(contactId)
+            .get().await()
+            .toObject(Contact::class.java)?.copy(id = contactId)
     }
 }
