@@ -1,14 +1,9 @@
 package com.example.rs_link.core.service
 
-// 1. Android Service & System
-
-// 2. Bluetooth Components
-
-// 3. Notification Compatibility (Required for older Android versions)
-
-// 4. Hilt Dependency Injection
-
-// 5. Your Resources (For the Notification Icon)
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.google.openlocationcode.OpenLocationCode // The library
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -30,19 +25,24 @@ import android.telephony.SmsManager
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.example.rs_link.R
+import com.example.rs_link.data.model.Contact
 import com.example.rs_link.data.repository.UserRepository
 import com.example.rs_link.feature_dashboard.DashboardActivity
 import com.example.rs_link.feature_dashboard.home.BluetoothConstants
+import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
-
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import kotlinx.coroutines.tasks.await
 
 @AndroidEntryPoint
 class BluetoothLeService : Service() {
@@ -54,6 +54,12 @@ class BluetoothLeService : Service() {
     // Scope for background database/repository operations
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    override fun onCreate() {
+        super.onCreate()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    }
     private val gattCallback = object : BluetoothGattCallback() {
 
         // A. Connection Change (Connected / Disconnected)
@@ -267,43 +273,68 @@ class BluetoothLeService : Service() {
     // 3. The Sending Logic
     private fun sendEmergencySms(crashData: String) {
         serviceScope.launch {
-            // A. Get contacts from your database
-            // .first() grabs the current list once and stops listening
+            // 1. Get User ID
+            val uid = userRepository.getCurrentUserId() ?: return@launch
+
+            // 1. Get Contacts
             val contacts = userRepository.getEmergencyContacts().first()
+            if (contacts.isEmpty()) return@launch
 
-            if (contacts.isEmpty()) {
-                Log.e("BluetoothService", "No contacts to notify!")
-                return@launch
-            }
+            // --- 1. DEFAULT MESSAGE (NO GPS) ---
+            var smsBody = "SOS! RS-Link detected crash: $crashData. GPS Unavailable."
 
-            // B. Get the SMS Manager (Handles Android Version differences)
-            val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                getSystemService(SmsManager::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                SmsManager.getDefault()
-            }
+            // --- 2. CHECK PERMISSION SAFELY ---
+            val hasLocationPermission = ContextCompat.checkSelfPermission(
+                this@BluetoothLeService,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
 
-            // C. Create the message
-            // Tip: Include a Google Maps link if you have location data
-            val smsBody = "SOS! RS-Link detected a crash: $crashData. Please check on me."
-
-            // D. Loop through every contact and send
-            contacts.forEach { contact ->
+            // --- 3. IF GRANTED, TRY TO GET LOCATION ---
+            if (hasLocationPermission) {
                 try {
-                    // This uses YOUR SIM card to send the text
-                    smsManager.sendTextMessage(
-                        contact.number, // The recipient's number
-                        null,           // null = use default Service Center
-                        smsBody,        // The text message
-                        null,           // SentIntent (Optional: to know if it sent)
-                        null            // DeliveryIntent (Optional: to know if delivered)
-                    )
-                    Log.i("BluetoothService", "Sent SMS to ${contact.firstName}")
+                    // 3. FETCH USER NAME (This works offline if Firestore cache is on)
+                    val userProfile = userRepository.getUserProfile(uid)
+                    val myName = userProfile?.firstName ?: "RS-Link User" // Fallback if name fails
+
+                    // 1. GET CURRENT TIME
+                    // Format: "2:30 PM" or "14:30" depending on user locale
+                    val currentTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
+
+                    val location = fusedLocationClient.lastLocation.await()
+                        ?: fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+
+                    if (location != null) {
+                        val plusCode = OpenLocationCode.encode(location.latitude, location.longitude, 10)
+                        // Update message with GPS data
+                        smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.\n" + "Location Code: $plusCode\n" +
+                                "Search this code on Maps."
+                    }
+                    else{
+                        smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.. GPS Unavailable."
+                    }
                 } catch (e: Exception) {
-                    Log.e("BluetoothService", "Failed to send to ${contact.number}: ${e.message}")
+                    Log.e("BluetoothService", "Location Error: ${e.message}")
+                    // Fallback to the default "GPS Unavailable" message
                 }
+            } else {
+                Log.w("BluetoothService", "Cannot attach location: Permission missing.")
             }
+
+            // --- 4. SEND THE SMS ---
+            sendToContacts(contacts, smsBody)
+        }
+    }
+
+    private fun sendToContacts(contacts: List<Contact>, message: String) {
+        val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            getSystemService(SmsManager::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            SmsManager.getDefault()
+        }
+
+        contacts.forEach { contact ->
+            smsManager.sendTextMessage(contact.number, null, message, null, null)
         }
     }
 }
