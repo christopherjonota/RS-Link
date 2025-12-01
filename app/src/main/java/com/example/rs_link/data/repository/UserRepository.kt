@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.rs_link.data.model.User
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface UserRepository {
 
@@ -43,4 +44,11 @@ interface UserRepository {
     suspend fun deleteEmergencyContact(contactId: String)
     suspend fun getContactById(contactId: String): Contact? // Needed to pre-fill the Edit form
     fun getEmergencyContacts(): Flow<List<Contact>>
+
+    suspend fun updateSensorData(data: String) // Add this
+    val sensorData: StateFlow<String> // Add this for the UI to observe
+
+    // 1. ADD THIS: A stream for connection status
+    val connectionStatus: StateFlow<String>
+    suspend fun updateConnectionStatus(status: String)
 }

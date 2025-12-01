@@ -7,6 +7,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -142,5 +144,19 @@ class UserRepositoryImpl @Inject constructor(
             .collection("contacts").document(contactId)
             .get().await()
             .toObject(Contact::class.java)?.copy(id = contactId)
+    }
+
+    private val _sensorData = MutableStateFlow("Waiting...")
+    override val sensorData = _sensorData.asStateFlow()
+
+    override suspend fun updateSensorData(data: String) {
+        _sensorData.value = data
+    }
+
+    private val _connectionStatus = MutableStateFlow("Disconnected")
+    override val connectionStatus = _connectionStatus.asStateFlow()
+
+    override suspend fun updateConnectionStatus(status: String) {
+        _connectionStatus.value = status
     }
 }

@@ -41,6 +41,8 @@ const long required_manual_crash_button_hold = 5000;
 bool crashButtonHold = false;
 unsigned long crashButtonPressTime = 0;
 
+bool buttonActionTaken = false;
+
 bool crashAlertSend = false;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -205,6 +207,7 @@ void bluetooth_loop() {
           tone(BUZZER_PIN, 1800, 300);
         }
         toneState = !toneState;
+        lastToneTime = millis(); // IMPORTANT: Update timer logic
       }
 
       // Send an alert through bluetooth
@@ -241,29 +244,37 @@ void bluetooth_loop() {
       crashButtonPressTime = millis(); // set the holding time
     }
     else if (millis() - crashButtonPressTime > required_crash_button_hold){
-      if(millis() - crashButtonPressTime > required_manual_crash_button_hold && buzzerOn == false && crashConfirmed == false){
+      if(!buzzerOn && !crashConfirmed && !buttonActionTaken){
         crashConfirmed = true;
         buzzerOn = true;
+        crashAlertSend = true;
         String manualAlert = "Manual Alert";
         pCharacteristic->setValue(manualAlert.c_str());
-        pCharacteristic->notify(); // Sends data to Android
+        pCharacteristic->notify(); 
         Serial.println(manualAlert);
+        
+        buttonActionTaken = true; // Lock the button so it doesn't trigger "Stop" immediately
       }
-      // marks the end of the confirmed crash buzzer
-      else if (crashConfirmed == true){
-        String stop = "Confirmed Accident";
+      // SCENARIO 2: Stop Alert (Manually cancelling)
+      // Added "!buttonActionTaken" here too
+      else if (crashConfirmed == true && !buttonActionTaken){
+        String stop = "Confirmed Accident"; // Or "Alert Cancelled"
         pCharacteristic->setValue(stop.c_str());
-        pCharacteristic->notify(); // Sends data to Android
+        pCharacteristic->notify(); 
+        
         crashConfirmed = false;
         buzzerOn = false;
-        Serial.println("Stopped at crash confirm");
         crashAlertSend = false;
+        Serial.println("Stopped via button");
+        
+        buttonActionTaken = true; // Lock the button
       }
-
-      // marks the end of the crash detected
-      else if (crashConfirmed == false && buzzerOn == true){
+      // SCENARIO C: Stop False Detection (The "Warning" Phase) <--- PASTE IT HERE
+      else if (crashConfirmed == false && buzzerOn == true && !buttonActionTaken){
         buzzerOn = false;
         Serial.println("Stopped at crash detection");
+        
+        buttonActionTaken = true; // IMPORTANT: Lock the button here too!
       }
     }
   }
@@ -272,6 +283,7 @@ void bluetooth_loop() {
       // Button was just released
       Serial.println("Button released.");
       crashButtonPressTime = 0; // Reset the timer
+      buttonActionTaken = false; // Reset the lock
     }
   }
   int16_t ax, ay, az;

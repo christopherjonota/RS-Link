@@ -63,7 +63,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.rs_link.R
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen (
     viewModel: HomeViewModel = hiltViewModel(),
@@ -81,7 +85,12 @@ fun HomeScreen (
         "Connecting..." -> Color.Yellow
         else -> Color.Red
     }
-
+    val notificationPermission = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+    LaunchedEffect(Unit) {
+        if (!notificationPermission.status.isGranted) {
+            notificationPermission.launchPermissionRequest()
+        }
+    }
     val userName by viewModel.userName.collectAsState()
     val hasNotifications by viewModel.hasNotifications.collectAsState()
     // ROOT CONTAINER: Handles Layering
@@ -196,7 +205,7 @@ fun HomeScreen (
                         }
 
                         // Right: Connect/Disconnect Button
-                        if (connectionStatus == "Connected!") {
+                        if (connectionStatus == "Connected") {
                             Button(
                                 onClick = { bluetoothViewModel.disconnect() },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
