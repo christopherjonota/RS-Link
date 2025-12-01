@@ -31,4 +31,10 @@ interface UserRepository {
 
     // Updates the profile (e.g., user changes their phone number)
     suspend fun updateUserProfile(user: User)
+
+    suspend fun addEmergencyContact(
+        firstName: String,
+        lastName: String,
+        number: String,
+    )
 }

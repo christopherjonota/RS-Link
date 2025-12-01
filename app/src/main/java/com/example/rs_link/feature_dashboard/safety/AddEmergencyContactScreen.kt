@@ -30,19 +30,26 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.rs_link.R
 import com.example.rs_link.feature_auth.registration.LabeledTextField
 
 @Composable
 fun AddEmergencyContactScreen(
+    viewModel: AddEmergencyContactViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
+
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold { paddingValues ->
         Box(modifier = Modifier
             .fillMaxSize()
@@ -73,20 +80,18 @@ fun AddEmergencyContactScreen(
                 // First Name text field
                 LabeledTextField(
                     textFieldLabel = "First Name",
-                    value = "",
-                    onValueChange = { },
-                    placeholder = "Enter your first name",
-                    errorText = "",
+                    value = uiState.firstName,
+                    onValueChange = viewModel::onFirstNameChange,
+                    placeholder = "Enter your first name"
                 )
                 Spacer(Modifier.height(8.dp))
 
                 // Last Name text field
                 LabeledTextField(
                     textFieldLabel = "Last Name",
-                    value = "",
-                    onValueChange = {},
-                    placeholder = "Enter your last name",
-                    errorText = "",
+                    value = uiState.lastName,
+                    onValueChange = viewModel::onLastNameChange,
+                    placeholder = "Enter your last name"
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -94,9 +99,10 @@ fun AddEmergencyContactScreen(
                 // Contact Number text field
                 LabeledTextField(
                     textFieldLabel = "Contact Number",
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.phoneNumber,
+                    onValueChange = viewModel::onNumberChange,
                     placeholder = "Enter your contact number",
+                    errorText = uiState.errorMessage, // Show error if validation failed later
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Phone
                     ),
@@ -132,7 +138,7 @@ fun AddEmergencyContactScreen(
                     }
                 )
                 Button(
-                    onClick = {},
+                    onClick = viewModel::saveContact,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Save")

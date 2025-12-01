@@ -68,4 +68,25 @@ class UserRepositoryImpl @Inject constructor(
                 .await()
         }
     }
+    override suspend fun addEmergencyContact(
+        firstName: String,
+        lastName: String,
+        number: String,
+    ) {
+        val uid = auth.currentUser?.uid ?: return
+
+        // Create the map with separate fields
+        val contact = hashMapOf(
+            "firstName" to firstName,
+            "lastName" to lastName,
+            "fullName" to "$firstName $lastName", // Optional: Store combined for easy searching later
+            "number" to number
+        )
+
+        firestore.collection("users")
+            .document(uid)
+            .collection("contacts")
+            .add(contact)
+            .await()
+    }
 }
