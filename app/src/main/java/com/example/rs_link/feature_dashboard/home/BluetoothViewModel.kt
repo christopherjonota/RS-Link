@@ -56,7 +56,8 @@ class BluetoothViewModel @Inject constructor(
     // System Bluetooth Adapter
     private val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val adapter = bluetoothManager.adapter
-    private val scanner = adapter.bluetoothLeScanner
+    private val scanner
+        get() = adapter.bluetoothLeScanner
 
     private var bluetoothGatt: BluetoothGatt? = null
 
@@ -179,7 +180,15 @@ class BluetoothViewModel @Inject constructor(
 
     @SuppressLint("MissingPermission")
     fun startScan() {
-        if (_isScanning.value) return // Already scanning
+        // 1. Check if Scanner exists (Bluetooth is On)
+        if (scanner == null) {
+            Log.e("Bluetooth", "Bluetooth is OFF or unavailable.")
+            _isScanning.value = false
+            // Optional: Trigger a UI event to tell the user to turn on Bluetooth
+            return
+        }
+
+        if (_isScanning.value) return
 
         // Clear old list
         _scannedDevices.value = emptyList()
@@ -199,7 +208,7 @@ class BluetoothViewModel @Inject constructor(
         // --- 3. START SCAN WITH FILTER ---
         // We pass a List of filters. Only devices matching ALL rules in a filter show up.
         try {
-            scanner.startScan(listOf(filter), settings, scanCallback)
+            scanner?.startScan(listOf(filter), settings, scanCallback)
 
             // Auto-stop after 10s
             viewModelScope.launch {

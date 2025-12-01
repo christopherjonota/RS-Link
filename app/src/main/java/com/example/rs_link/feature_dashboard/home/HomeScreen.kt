@@ -2,7 +2,12 @@ package com.example.rs_link.feature_dashboard.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.content.Intent
 import android.graphics.fonts.FontStyle
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -55,6 +60,7 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.rs_link.R
 
@@ -289,15 +295,38 @@ fun BluetoothDeviceListDialog(
     viewModel: BluetoothViewModel = hiltViewModel(),
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     val devices by viewModel.scannedDevices.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
 
+
+    // --- 1. LAUNCHER TO TURN ON BLUETOOTH ---
+    val enableBluetoothLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // User said "Yes", Bluetooth is now ON -> Start Scan
+            viewModel.startScan()
+        } else {
+            // User said "No" -> Dismiss dialog or show error
+            onDismiss()
+        }
+    }
     // --- PERMISSION LAUNCHER ---
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions.values.all { it }) {
-            viewModel.startScan()
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            // Permissions granted! Now check if BT is actually ON.
+            val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+
+            if (adapter?.isEnabled == true) {
+                viewModel.startScan()
+            } else {
+                // It's OFF. Prompt user to turn it on.
+                enableBluetoothLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            }
         }
     }
 
