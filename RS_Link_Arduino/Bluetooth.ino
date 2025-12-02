@@ -44,6 +44,7 @@ unsigned long crashButtonPressTime = 0;
 bool buttonActionTaken = false;
 
 bool crashAlertSend = false;
+bool crashReportSent = false; // The "Lock" variable
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -316,15 +317,22 @@ void bluetooth_loop() {
             Serial.println("CRASH CONFIRMED: High G + Tilt Detected");
             // Trigger Buzzer
             buzzerOn = true;
+            if (!crashReportSent) {
             
-             // Send "C" for Crash to Android App
-             String crashMsg = "CRASH_DETECTED";
-             pCharacteristic->setValue(crashMsg.c_str());
-             pCharacteristic->notify();
+              // Send to Android App
+              String crashMsg = "CRASH_DETECTED";
+              pCharacteristic->setValue(crashMsg.c_str());
+              pCharacteristic->notify();
+              
+              Serial.println("BLE Notification Sent!");
+
+              // 3. LOCK IT: Prevent sending again
+              crashReportSent = true; 
+            }
         } else {
              Serial.println("False Alarm: Impact detected but device is upright.");
         }
-        
+         crashReportSent = false; 
         // Reset logic to scan for next crash
         crashDetected = false;
     }

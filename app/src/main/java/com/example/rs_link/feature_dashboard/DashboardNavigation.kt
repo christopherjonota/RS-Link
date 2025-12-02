@@ -25,6 +25,7 @@ import androidx.navigation.navArgument
 import com.example.rs_link.R
 import com.example.rs_link.feature_dashboard.home.HomeScreen
 import com.example.rs_link.feature_dashboard.location.HomeMapScreen
+import com.example.rs_link.feature_dashboard.riding.RidingScreen
 import com.example.rs_link.feature_dashboard.safety.AddEmergencyContactScreen
 import com.example.rs_link.feature_dashboard.safety.EmergencyContactScreen
 import com.example.rs_link.feature_dashboard.safety.SafetyScreen
@@ -34,7 +35,7 @@ import com.example.rs_link.feature_dashboard.settings.SettingsScreen
 
 sealed class DashboardRoute(val route: String, val title: String, val icon: Int, val selectedIcon: Int) {
     object Home : DashboardRoute("home", "Home", R.drawable.icon_home, R.drawable.icon_home_filled)
-    object Riding : DashboardRoute("riding", "Ride", R.drawable.icon_riding,R.drawable.icon_riding_filled)
+    //object Riding : DashboardRoute("riding", "Ride", R.drawable.icon_riding,R.drawable.icon_riding_filled)
     object Settings : DashboardRoute("settings", "Settings", R.drawable.icon_settings,R.drawable.icon_settings_filled)
     object Safety: DashboardRoute("safety", "Safety", R.drawable.icon_safety,R.drawable.icon_safety_filled)
     object Location: DashboardRoute("location", "Location", R.drawable.icon_location,R.drawable.icon_location_filled)
@@ -60,7 +61,8 @@ fun DashboardNavigation(
 
 
         composable(DashboardRoute.Home.route) {
-            HomeScreen()
+            HomeScreen(
+            )
         }
 
         composable(DashboardRoute.Safety.route){
@@ -72,10 +74,9 @@ fun DashboardNavigation(
                 onNavigateToCrashAlert = { }
             )
         }
-        composable(DashboardRoute.Riding.route) {
-            // HistoryScreen()
-            androidx.compose.material3.Text("Ride History Content")
-        }
+//        composable(DashboardRoute.Riding.route) {
+//            RidingScreen()
+//        }
         composable(DashboardRoute.Location.route) {
             HomeMapScreen()
         }

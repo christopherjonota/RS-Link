@@ -83,7 +83,8 @@ class UserRepositoryImpl @Inject constructor(
 
         // Create the map with separate fields
         val contact = hashMapOf(
-            "fullName" to "$firstName $lastName", // Optional: Store combined for easy searching later
+            "firstName" to firstName, // Optional: Store combined for easy searching later
+            "lastName" to lastName,
             "number" to number
         )
 

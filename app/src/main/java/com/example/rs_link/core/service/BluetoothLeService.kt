@@ -109,8 +109,14 @@ class BluetoothLeService : Service() {
             if (message.contains("Manual Alert", ignoreCase = true)) {
                 Log.w("Bluetooth", "Crash Detected - Sending Notification")
                 sendAlertNotification("Manual Crash Activated! Check status.")
+                sendEmergencySms(message)
             }
-            else if (message.contains("Confirmed Accident", ignoreCase = true)){
+//            else if (message.contains("CRASH_DETECTED", ignoreCase = true)){
+//                sendAlertNotification("Accident Detected has been Confirmed! Send Help!")
+//                sendEmergencySms(message)
+
+//            }
+            else if (message.contains("Crash Confirmed", ignoreCase = true)){
                 sendAlertNotification("Accident Detected has been Confirmed! Send Help!")
                 sendEmergencySms(message)
             }
@@ -306,8 +312,19 @@ class BluetoothLeService : Service() {
                     if (location != null) {
                         val plusCode = OpenLocationCode.encode(location.latitude, location.longitude, 10)
                         // Update message with GPS data
-                        smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.\n" + "Location Code: $plusCode\n" +
-                                "Search this code on Maps."
+                        if(crashData.contains("Manual Alert", ignoreCase = true)){
+                            smsBody = "SOS! $myName just activated the manual alert at $currentTime.\n" + "Location Code: $plusCode\n" +
+                                    "Search this code on Maps. Contact him to update his status"
+                        }
+                        else if(crashData.contains("Crash Confirmed", ignoreCase = true)){
+                            smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.\n" + "Location Code: $plusCode\n" +
+                                    "Search this code on Maps."
+                        }
+//                        else if(crashData.contains("Confirmed Accident", ignoreCase = true)){
+//                            smsBody = "RS-Link detected $myName had a crash at $currentTime.\n" + "Location Code: $plusCode\n" +
+//                                    "Search this code on Maps."
+//                        }
+
                     }
                     else{
                         smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.. GPS Unavailable."

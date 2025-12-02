@@ -33,7 +33,7 @@ fun DashboardScreen (
     val bottomNavItems = listOf(
         DashboardRoute.Home,
         DashboardRoute.Location,
-        DashboardRoute.Riding,
+        //DashboardRoute.Riding,
         DashboardRoute.Safety,
         DashboardRoute.Settings
     )

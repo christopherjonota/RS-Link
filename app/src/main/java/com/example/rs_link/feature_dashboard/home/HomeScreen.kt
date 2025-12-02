@@ -60,19 +60,34 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.rs_link.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import android.net.Uri
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen (
     viewModel: HomeViewModel = hiltViewModel(),
-    bluetoothViewModel: BluetoothViewModel = hiltViewModel()
+    bluetoothViewModel: BluetoothViewModel = hiltViewModel(),
 ){
+    val context = LocalContext.current
+    val diagonalGradientBrush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF026773),
+            Color(0xFFFAFAFA)
+        ),
+        start = Offset.Zero, // Top-Left corner (0, 0)
+        end = Offset.Infinite  // Bottom-Right corner
+    )
+
     var showBluetoothDialog by remember { mutableStateOf(false) }
 
     // 1. Observe the status
@@ -193,120 +208,103 @@ fun HomeScreen (
                     shadowElevation = 8.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(250.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .height(250.dp)
+
+                        ,
+                    shape = RoundedCornerShape(12.dp),
+
                 ){
-                    Column{
-                        Text("RS Link")
+                    Column(modifier = Modifier
+                        .background(
+                        brush = diagonalGradientBrush // 👈 Apply the Brush here
+                    )
+                        .padding(8.dp)
+                    ){
+                        Text(text = "RS Link", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.secondary)
+                        Spacer(Modifier.height(16.dp))
                         Row {
-                            Text("Hehheehe")
+                            Text(modifier = Modifier.width(100.dp), text = "The Intelligent Link Between You and Safety.", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.secondary)
+                            Spacer(Modifier.width(8.dp))
                             Image(
                                 painter = painterResource(id = R.drawable.home_screen_illus),
                                 contentDescription = null
                             )
                         }
-                        Card {
-                            Text("get yours now")
+                        Spacer(Modifier.height(16.dp))
+                        val onCardClick: () -> Unit = {
+                            // 2. Create and launch the Intent
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.shopee.com"))
+                            context.startActivity(intent)
                         }
-
-
-                        if (showBluetoothDialog) {
-                            BluetoothDeviceListDialog(
-                                onDismiss = { showBluetoothDialog = false }
-                            )
+                        Button(onClick = onCardClick) {
+                            Text(text = "Get your RS Link Now!")
                         }
-
-                        // Right: Connect/Disconnect Button
-                        if (connectionStatus == "Connected") {
-                            Button(
-                                onClick = { bluetoothViewModel.disconnect() },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Text("Disconnect", fontSize = 12.sp)
-                            }
-                        } else {
-                            // Show "Connect" button or Icon to open Scanner Dialog
-                            Button(
-                                onClick = { showBluetoothDialog = true },
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Text("Connect", fontSize = 12.sp)
-                            }
-                        }
-
-                        Text(
-                            text = "Status: $connectionStatus",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
                     }
+
                 }
-                // 2. Show the Card
-                LiveDataCard(data = receivedData)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    QuickActionItem(
-                        title = "Ride",
-                        icon = Icons.Default.Person,
-                        onClick = {}
-                    )
-                    QuickActionItem(
-                        title = "Package",
-                        icon = Icons.Default.Person,
-                        onClick = { /* TODO */ }
-                    )
-                    QuickActionItem(
-                        title = "Reserve",
-                        icon = Icons.Default.Person,
-                        onClick = { /* TODO */ }
-                    )
+                Spacer(Modifier.height(16.dp))
+                Surface (
+                    shadowElevation = 8.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                    ,
+                    shape = RoundedCornerShape(12.dp),
+
+                    ){
+                    Column(modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background
+                        )
+                        .padding(8.dp)
+                    ){
+                        Spacer(Modifier.height(16.dp))
+                        Row(Modifier.padding(horizontal = 8.dp)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.home_screen_illus1),
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Column(modifier = Modifier.fillMaxHeight().align(Alignment.CenterVertically),horizontalAlignment = Alignment.CenterHorizontally){
+                                if (showBluetoothDialog) {
+                                    BluetoothDeviceListDialog(
+                                        onDismiss = { showBluetoothDialog = false }
+                                    )
+                                }
+
+                                // Right: Connect/Disconnect Button
+                                if (connectionStatus == "Connected") {
+                                    Button(
+                                        onClick = { bluetoothViewModel.disconnect() },
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                                        modifier = Modifier.height(32.dp)
+                                    ) {
+                                        Text("Disconnect", fontSize = 12.sp)
+                                    }
+                                } else {
+                                    // Show "Connect" button or Icon to open Scanner Dialog
+                                    Button(
+                                        onClick = { showBluetoothDialog = true },
+                                        modifier = Modifier.padding(vertical = 16.dp),
+                                    ) {
+                                        Text(text = "Start your Ride Now", style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center )
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+
                 }
+
             }
 
 
         }
 
 
-    }
-}
-
-
-// --- HELPER COMPONENT FOR BUTTONS ---
-@Composable
-fun QuickActionItem(
-    title: String,
-    icon: ImageVector,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() }
-    ) {
-        // The Icon Box
-        Surface(
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.size(70.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold
-        )
     }
 }
 
@@ -431,42 +429,4 @@ fun BluetoothDeviceListDialog(
             }
         }
     )
-}
-@Composable
-fun LiveDataCard(
-    data: String
-) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Phone, // Or Icons.Default.Bolt
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Live Device Data",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // The Actual Text from ESP32
-            Text(
-                text = data,
-                style = MaterialTheme.typography.headlineMedium, // Big text
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
 }

@@ -76,7 +76,7 @@ fun EmergencyContactScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Emergency Contacts") },
+                title = { Text(text = "Emergency Contacts", style = MaterialTheme.typography.labelLarge) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -94,26 +94,6 @@ fun EmergencyContactScreen(
         if (contacts.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues).background(MaterialTheme.colorScheme.surface)){
                 Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                    Surface (
-                        shadowElevation = 8.dp,
-                        modifier = Modifier.wrapContentSize()
-                    ){
-                        Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
-                            IconButton(
-                                onClick = onNavigateBack
-                            ) {
-                                Image(
-                                    contentDescription = null,
-                                    imageVector = Icons.Default.ArrowBack
-                                )
-                                Spacer(Modifier.width(12.dp))
-                            }
-                            Text(
-                                text = "Emergency Contacts",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = MaterialTheme.typography.labelLarge)
-                        }
-                    }
                     Spacer(Modifier.height(24.dp))
                     Column (modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
                         Column (
@@ -176,7 +156,7 @@ fun EmergencyContactScreen(
             }
         }
         else{
-            LazyColumn(modifier = Modifier.padding(paddingValues)) {
+            LazyColumn(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
                 items(contacts) { contact ->
                     // Reusing your ContactItem
                     ContactItem(

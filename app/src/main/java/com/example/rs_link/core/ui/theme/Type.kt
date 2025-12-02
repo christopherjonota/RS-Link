@@ -77,7 +77,7 @@ val AppTypography = Typography(
 
     // Used for text on buttons
     labelLarge = TextStyle(
-        fontFamily = mulishFontFamily,
+        fontFamily = nunitoFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp
     ),
