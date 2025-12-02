@@ -79,7 +79,7 @@ void power_loop(){
 
   if (isShuttingDown) {
     return;
-  }
+  }1
  // Read the current state of the button
   int buttonState = digitalRead(POWER_BUTTON_PIN);
 
