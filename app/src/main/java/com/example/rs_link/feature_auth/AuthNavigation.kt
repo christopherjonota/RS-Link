@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.rs_link.feature_auth.forgot_password.ForgotPasswordScreen
 import com.example.rs_link.feature_auth.registration.RegistrationScreen
 import com.example.rs_link.feature_auth.login.LoginViewModel
 import com.example.rs_link.feature_auth.registration.RegistrationViewModel
@@ -13,19 +14,21 @@ import com.example.rs_link.feature_auth.registration.RegistrationViewModel
 object Screen{
     const val REGISTRATION = "registration"
     const val AUTH = "auth"
+    const val FORGOT = "forgot"
 }
 
 @Composable
 fun AuthNavigation(
     loginViewModel: LoginViewModel,
     registrationViewModel: RegistrationViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    startDestination: String = Screen.AUTH // Default
 ){
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Screen.AUTH  // Start the navigation to the starting part
+        startDestination = startDestination  // Start the navigation to the starting part
     ){
 
         // Auth Screen Route
@@ -80,6 +83,24 @@ fun AuthNavigation(
                 },
                 registrationViewModel
             )
+        }
+
+        composable(
+            route = Screen.FORGOT,
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            },
+            // When returning to this screen (from REGISTRATION), slide it in from the LEFT
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            }){
+            ForgotPasswordScreen()
         }
     }
 }

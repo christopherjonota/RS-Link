@@ -20,6 +20,8 @@ class AuthActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val startDest = intent.getStringExtra("START_DESTINATION")
+            ?: Screen.AUTH
         setContent { // This will display the UI/ Content
             ThemeRSLink { //This is the theme that will be used
                 AuthNavigation(
@@ -27,7 +29,8 @@ class AuthActivity : ComponentActivity(){
                     registrationViewModel = registrationViewModel,
                     onLoginSuccess = {
                         navigateToDashboard()
-                    }
+                    },
+                    startDestination = startDest
                 )
             }
         }

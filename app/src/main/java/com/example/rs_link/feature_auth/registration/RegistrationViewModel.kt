@@ -180,6 +180,8 @@ class RegistrationViewModel @Inject constructor(
                 // 2. Call the repository to do the actual work
                 userRepository.registerUser(newUser, state.password)
 
+                userRepository.sendEmailVerification()
+
                 // --- ON SUCCESS ---
                 _uiState.update { it.copy(
                     isLoading = false,

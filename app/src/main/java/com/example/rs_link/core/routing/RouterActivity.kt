@@ -13,6 +13,7 @@ import android.content.Intent
 import com.example.rs_link.feature_dashboard.DashboardActivity
 import com.example.rs_link.feature_onboarding.OnboardingActivity
 import com.example.rs_link.feature_auth.AuthActivity
+import com.example.rs_link.feature_auth.Screen
 
 @AndroidEntryPoint // Used for hilt injection
 class RouterActivity : ComponentActivity() {
@@ -38,6 +39,12 @@ class RouterActivity : ComponentActivity() {
                         is Destination.Onboarding -> navigateTo(OnboardingActivity::class.java)
                         is Destination.SignIn -> navigateTo(AuthActivity::class.java)
                         is Destination.Dashboard -> navigateTo(DashboardActivity::class.java)
+                        is Destination.EmailVerification -> {
+                            val intent = Intent(this@RouterActivity, AuthActivity::class.java)
+                            intent.putExtra("START_DESTINATION", Screen.FORGOT) // or Screen.EMAIL_VERIFICATION
+                            startActivity(intent)
+                            finish()
+                        }
                         is Destination.Loading -> { /* Do nothing, waiting for checks */ }
                     }
                 }

@@ -160,4 +160,18 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateConnectionStatus(status: String) {
         _connectionStatus.value = status
     }
+    override suspend fun sendEmailVerification() {
+        // Sends the standard Firebase "Verify your email" link
+        auth.currentUser?.sendEmailVerification()?.await()
+    }
+
+    override suspend fun reloadUser() {
+        // Crucial: You must reload to get the latest "isEmailVerified" status
+        // otherwise it stays false even after they click the link.
+        auth.currentUser?.reload()?.await()
+    }
+
+    override fun isEmailVerified(): Boolean {
+        return auth.currentUser?.isEmailVerified == true
+    }
 }

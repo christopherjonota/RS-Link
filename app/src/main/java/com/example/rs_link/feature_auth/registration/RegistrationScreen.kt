@@ -53,6 +53,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SelectableDates
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -268,14 +269,14 @@ fun RegistrationScreen(
                 trailingIcon = {
                     // Determine which icon to show
                     val image = if (passwordVisible)
-                        Icons.Filled.Check // Eye icon open
+                        painterResource(id = R.drawable.icon_eye_visible)
                     else
-                        Icons.Filled.Add // Eye icon closed
+                        painterResource(id = R.drawable.icon_eye_not_visible)
 
                     IconButton(onClick = {
                         passwordVisible = !passwordVisible // Toggle state on click
                     }) {
-                        Icon(imageVector  = image, contentDescription = "Toggle password visibility")
+                        Icon(painter = image, contentDescription = "Toggle password visibility")
                     }
                 },
                 errorText = state.passwordError,
@@ -303,6 +304,7 @@ fun RegistrationScreen(
             ) {
                 Text(text = "Add Account")
             }
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
@@ -320,8 +322,39 @@ fun DatePickerField(
 
     // DatePickerDialog logic
     if (showDatePicker) { // if the textfield was clicked this will show
-        val datePickerState = rememberDatePickerState() // this is what is used to interact with and get data
 
+        val dateValidator = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                // Allow only dates in the past or today
+                return utcTimeMillis <= System.currentTimeMillis()
+            }
+
+            override fun isSelectableYear(year: Int): Boolean {
+                // Optional: Restrict years (e.g., max year is current year)
+                return year <= java.time.LocalDate.now().year
+            }
+        }
+
+        val datePickerState = rememberDatePickerState(
+            selectableDates = dateValidator
+        )
+
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { onDateSelected(it) }
+                        showDatePicker = false
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false }, // unshow the date picker
             confirmButton = {

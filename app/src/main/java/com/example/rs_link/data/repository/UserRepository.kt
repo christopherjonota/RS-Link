@@ -51,4 +51,9 @@ interface UserRepository {
     // 1. ADD THIS: A stream for connection status
     val connectionStatus: StateFlow<String>
     suspend fun updateConnectionStatus(status: String)
+
+
+    suspend fun sendEmailVerification()
+    suspend fun reloadUser() // Refreshes the user data to check "isEmailVerified"
+    fun isEmailVerified(): Boolean
 }

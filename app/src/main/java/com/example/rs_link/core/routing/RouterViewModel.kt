@@ -19,6 +19,7 @@ sealed class Destination {
     object Onboarding : Destination()
     object SignIn : Destination()
     object Dashboard : Destination()
+    object EmailVerification: Destination()
 }
 
 @HiltViewModel
@@ -45,11 +46,13 @@ class RouterViewModel @Inject constructor(
             // Fetch required states from repositories
             val hasSeenOnboarding = userPrefsRepository.hasSeenOnboarding().first()
             val isLoggedIn = userRepository.isUserLoggedIn()
+            val isVerified = userRepository.isEmailVerified()
 
             // Implement priority routing logic
             _destination.value = when {
                 !hasSeenOnboarding -> Destination.Onboarding // redirect to the onboarding if not seen yet
                 !isLoggedIn -> Destination.SignIn   // redirect to sign in page if not signed in yet
+                !isVerified -> Destination.EmailVerification
                 else -> Destination.Dashboard // redirect to the dashboard if the other 2 is met
             }
         }
