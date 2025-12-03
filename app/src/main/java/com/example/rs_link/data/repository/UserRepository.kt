@@ -56,4 +56,10 @@ interface UserRepository {
     suspend fun sendEmailVerification()
     suspend fun reloadUser() // Refreshes the user data to check "isEmailVerified"
     fun isEmailVerified(): Boolean
+
+    fun getCurrentUserEmail(): String? // Add this
+
+    suspend fun sendPasswordResetEmail(email: String)
+
+
 }

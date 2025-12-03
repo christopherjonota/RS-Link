@@ -69,6 +69,7 @@ import kotlinx.coroutines.launch
 fun AuthScreen (
     viewModel: LoginViewModel,
     onNavigateToRegistration: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
     onLoginSuccess: ()-> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState() // holds the state of the login view model
@@ -308,6 +309,7 @@ fun AuthScreen (
                                 viewModel.resetUiState()    // this will reset the ui state once its been close
                             }
                         },
+                        onNavigateToForgotPassword = onNavigateToForgotPassword
                     )
                 }
             }

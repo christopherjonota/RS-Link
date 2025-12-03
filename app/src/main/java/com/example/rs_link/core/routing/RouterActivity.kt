@@ -41,7 +41,7 @@ class RouterActivity : ComponentActivity() {
                         is Destination.Dashboard -> navigateTo(DashboardActivity::class.java)
                         is Destination.EmailVerification -> {
                             val intent = Intent(this@RouterActivity, AuthActivity::class.java)
-                            intent.putExtra("START_DESTINATION", Screen.FORGOT) // or Screen.EMAIL_VERIFICATION
+                            intent.putExtra("START_DESTINATION", Screen.EMAIL_VERIFICATION) // or Screen.EMAIL_VERIFICATION
                             startActivity(intent)
                             finish()
                         }

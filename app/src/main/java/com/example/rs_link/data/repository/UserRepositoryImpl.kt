@@ -174,4 +174,14 @@ class UserRepositoryImpl @Inject constructor(
     override fun isEmailVerified(): Boolean {
         return auth.currentUser?.isEmailVerified == true
     }
+
+    override fun getCurrentUserEmail(): String? {
+        return auth.currentUser?.email
+    }
+
+    override suspend fun sendPasswordResetEmail(email: String) {
+        // This sends an email with a link.
+        // If the user clicks it, Firebase handles the web page to reset it.
+        auth.sendPasswordResetEmail(email).await()
+    }
 }

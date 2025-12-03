@@ -2,6 +2,7 @@ package com.example.rs_link.feature_auth.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -83,6 +84,7 @@ fun ForgotPassword(onNavigateForgotPassword: () -> Unit){
 @Composable
 fun LoginForm(
     viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToForgotPassword: () -> Unit,
     onClose: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState() // holds the value of the state e.g. email, password, etc.
@@ -148,7 +150,19 @@ fun LoginForm(
         )
 
 
-        ForgotPassword { }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(
+                onClick = {
+                    // You need to pass this callback from the parent
+                    onNavigateToForgotPassword()
+                }
+            ) {
+                Text("Forgot Password?")
+            }
+        }
 
         Spacer(Modifier.height(24.dp))
 
@@ -166,46 +180,46 @@ fun LoginForm(
             )
         }
 
-        // Or Divider
-        Row(
-            modifier = Modifier.padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = "or",
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        // "Sign Up" Button
-        Button(
-            onClick = onClose, // Trigger the lambda to close the sheet
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-            colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
-        ) {
-            // Google Logo
-            Image(
-                painter = painterResource(R.drawable.google_logo),
-                contentDescription = "Google Logo",
-                modifier = Modifier.size(20.dp),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = "Sign up with Google",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-        }
+//        // Or Divider
+//        Row(
+//            modifier = Modifier.padding(vertical = 8.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            HorizontalDivider(
+//                modifier = Modifier.weight(1f),
+//                color = MaterialTheme.colorScheme.onSurface
+//            )
+//            Text(
+//                text = "or",
+//                color = MaterialTheme.colorScheme.onSurface
+//            )
+//            HorizontalDivider(
+//                modifier = Modifier.weight(1f),
+//                color = MaterialTheme.colorScheme.onSurface
+//            )
+//        }
+//
+//        // "Sign Up" Button
+//        Button(
+//            onClick = onClose, // Trigger the lambda to close the sheet
+//            modifier = Modifier.fillMaxWidth().height(56.dp),
+//            shape = RoundedCornerShape(12.dp),
+//            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+//            colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
+//        ) {
+//            // Google Logo
+//            Image(
+//                painter = painterResource(R.drawable.google_logo),
+//                contentDescription = "Google Logo",
+//                modifier = Modifier.size(20.dp),
+//                contentScale = ContentScale.Fit
+//            )
+//            Spacer(modifier = Modifier.width(10.dp))
+//            Text(
+//                text = "Sign up with Google",
+//                style = MaterialTheme.typography.labelLarge,
+//                color = MaterialTheme.colorScheme.tertiary
+//            )
+//        }
     }
 }
