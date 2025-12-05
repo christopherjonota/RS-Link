@@ -82,11 +82,11 @@ class EmergencyContactViewModel @Inject constructor(
 
     // 1. New Handlers
     fun onFirstNameChange(newValue: String) {
-        _uiState.update { it.copy(firstName = newValue, errorMessage = null) }
+        _uiState.update { it.copy(firstName = newValue, firstNameError = null) }
     }
 
     fun onLastNameChange(newValue: String) {
-        _uiState.update { it.copy(lastName = newValue, errorMessage = null) }
+        _uiState.update { it.copy(lastName = newValue, lastNameError = null) }
     }
 
     fun onNumberChange(newValue: String) {
@@ -108,7 +108,7 @@ class EmergencyContactViewModel @Inject constructor(
 
         // 3. Update State
         // We also LIMIT the length (e.g. 15 chars) to prevent massive strings
-        if (numericValue.length <= 11) {
+        if (numericValue.length <= 10) {
             _uiState.update {
                 it.copy(
                     phoneNumber = numericValue,

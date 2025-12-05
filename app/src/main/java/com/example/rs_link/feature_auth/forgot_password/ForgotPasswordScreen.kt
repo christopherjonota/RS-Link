@@ -1,6 +1,8 @@
 package com.example.rs_link.feature_auth.forgot_password
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,89 +43,93 @@ fun ForgotPasswordScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Reset Password") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Reset Password", style = MaterialTheme.typography.titleMedium) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            },
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+        ) { padding ->
+
+            // Success View (If email sent)
+            if (uiState.isSuccess) {
+                Column(
+                    modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).padding(padding).padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text("Check your Email", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        "We have sent password recovery instructions to your email.",color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    Button(onClick = onNavigateBack) {
+                        Text("Back to Login")
                     }
                 }
-            )
-        }
-    ) { padding ->
-
-        // Success View (If email sent)
-        if (uiState.isSuccess) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text("Check your Email", style = MaterialTheme.typography.headlineMedium)
-                Text(
-                    "We have sent password recovery instructions to your email.",
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.height(24.dp))
-                Button(onClick = onNavigateBack) {
-                    Text("Back to Login")
-                }
-            }
-        } else {
-            // Input View
-            Column(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    "Enter the email associated with your account and we'll send an email with instructions to reset your password.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                LabeledTextField(
-                    textFieldLabel = "Email Address",
-                    value = uiState.email,
-                    onValueChange = viewModel::onEmailChange,
-                    placeholder = "Enter your email",
-                    errorText = uiState.emailError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-                )
-
-                // Show Global Error (e.g. Network error)
-                if (uiState.errorMessage != null) {
-                    Text(
-                        text = uiState.errorMessage!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-
-                Spacer(Modifier.height(24.dp))
-
-                Button(
-                    onClick = viewModel::submit,
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    enabled = !uiState.isLoading
+            } else {
+                // Input View
+                Column(
+                    modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).padding(padding).padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(color = Color.White)
-                    } else {
-                        Text("Send Instructions")
+                    Text(
+                        "Enter the email associated with your account and we'll send an email with instructions to reset your password.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(Modifier.height(24.dp))
+
+                    LabeledTextField(
+                        textFieldLabel = "Email Address",
+                        value = uiState.email,
+                        onValueChange = viewModel::onEmailChange,
+                        placeholder = "Enter your email",
+                        errorText = uiState.emailError,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                    )
+
+                    // Show Global Error (e.g. Network error)
+                    if (uiState.errorMessage != null) {
+                        Text(
+                            text = uiState.errorMessage!!,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Button(
+                        onClick = viewModel::submit,
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        enabled = !uiState.isLoading
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(color = Color.White)
+                        } else {
+                            Text("Send Instructions")
+                        }
                     }
                 }
             }
         }
     }
+
 }

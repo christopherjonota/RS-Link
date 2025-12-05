@@ -71,8 +71,8 @@ fun SafetyScreen(
             Column(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
             ) {
-                SafetyScreenItem("Crash Detection & Alert", iconLeft = R.drawable.icon_alert, onClick = onNavigateToCrashAlert)
-                Spacer(Modifier.height(20.dp))
+//                SafetyScreenItem("Crash Detection & Alert", iconLeft = R.drawable.icon_alert, onClick = onNavigateToCrashAlert)
+//                Spacer(Modifier.height(20.dp))
                 SafetyScreenItem("Emergency Contacts", "$contactCount contacts added", R.drawable.icon_contact, onNavigateToEmergencyContact)
             }
 

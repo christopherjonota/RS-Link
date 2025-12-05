@@ -195,7 +195,7 @@ fun ContactOptionDialog(
             ) {
                 Text(
                     text = "Add Emergency Contact",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 )
 

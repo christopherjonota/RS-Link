@@ -279,6 +279,18 @@ class BluetoothLeService : Service() {
     // 3. The Sending Logic
     private fun sendEmergencySms(crashData: String) {
         serviceScope.launch {
+            // 1. CHECK PERMISSION BEFORE SENDING
+            val hasSmsPermission = ContextCompat.checkSelfPermission(
+                this@BluetoothLeService,
+                Manifest.permission.SEND_SMS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasSmsPermission) {
+                Log.e("BluetoothService", "❌ CRITICAL: Cannot send SMS. Permission denied.")
+                // Optional: Send a local notification telling the user to fix settings
+                sendAlertNotification("Error: SMS Permission missing. Cannot send alerts.")
+                return@launch
+            }
             // 1. Get User ID
             val uid = userRepository.getCurrentUserId() ?: return@launch
 
