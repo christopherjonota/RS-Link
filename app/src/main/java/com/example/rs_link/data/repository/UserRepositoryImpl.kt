@@ -1,6 +1,7 @@
 package com.example.rs_link.data.repository
 
 import com.example.rs_link.data.model.Contact
+import com.example.rs_link.data.model.CrashEvent
 import com.example.rs_link.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -183,5 +184,38 @@ class UserRepositoryImpl @Inject constructor(
         // This sends an email with a link.
         // If the user clicks it, Firebase handles the web page to reset it.
         auth.sendPasswordResetEmail(email).await()
+    }
+
+    override suspend fun logCrashEvent(message: String, location: String) {
+        val uid = auth.currentUser?.uid ?: return
+
+        val event = CrashEvent(
+            timestamp = System.currentTimeMillis(),
+            message = message,
+            location = location
+        )
+
+        // Save to a sub-collection: users -> [uid] -> crash_logs -> [auto-id]
+        firestore.collection("users").document(uid)
+            .collection("crash_logs")
+            .add(event)
+            .await()
+    }
+
+    override fun getCrashHistory(): Flow<List<CrashEvent>> = callbackFlow {
+        val uid = auth.currentUser?.uid ?: return@callbackFlow
+
+        val listener = firestore.collection("users").document(uid)
+            .collection("crash_logs")
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING) // Newest first
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    val events = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(CrashEvent::class.java)?.copy(id = doc.id)
+                    }
+                    trySend(events)
+                }
+            }
+        awaitClose { listener.remove() }
     }
 }

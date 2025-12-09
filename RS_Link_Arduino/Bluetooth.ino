@@ -46,6 +46,8 @@ bool buttonActionTaken = false;
 bool crashAlertSend = false;
 bool crashReportSent = false; // The "Lock" variable
 
+
+unsigned long lastHeartbeat = 0;
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
@@ -189,7 +191,13 @@ void bluetooth_setup() {
 }
 
 void bluetooth_loop() {
-
+  if (deviceConnected && (millis() - lastHeartbeat > 2000)) {
+    // You can reuse your existing characteristic or make a new one
+    Serial.println("HB");
+    pCharacteristic->setValue("HB"); 
+    pCharacteristic->notify();
+    lastHeartbeat = millis();
+  }
   
   if (buzzerOn) {
     if(millis() - crashTime >= CRASH_CONFIRM_TIME){

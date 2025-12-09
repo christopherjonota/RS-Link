@@ -42,6 +42,8 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 
 @AndroidEntryPoint
@@ -55,7 +57,8 @@ class BluetoothLeService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    private var heartbeatJob: Job? = null
+    private val HEARTBEAT_TIMEOUT = 5000L // 5 Seconds tolerance
     override fun onCreate() {
         super.onCreate()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -100,7 +103,7 @@ class BluetoothLeService : Service() {
             val message = String(value, Charsets.UTF_8)
             Log.d("BluetoothData", "Received: $message")
 
-            // B. Upd   ate the UI State
+            // B. Update the UI State
             serviceScope.launch {
                 userRepository.updateSensorData(message)
                 // For now, if you haven't added that function yet, just Log it:
@@ -119,6 +122,9 @@ class BluetoothLeService : Service() {
             else if (message.contains("Crash Confirmed", ignoreCase = true)){
                 sendAlertNotification("Accident Detected has been Confirmed! Send Help!")
                 sendEmergencySms(message)
+            }
+            else if (message.contains("HB", ignoreCase = true)){
+                resetHeartbeatTimer()
             }
         }
     }
@@ -232,6 +238,30 @@ class BluetoothLeService : Service() {
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private fun resetHeartbeatTimer() {
+        // Cancel the old countdown
+        heartbeatJob?.cancel()
+
+        // Start a new countdown
+        heartbeatJob = serviceScope.launch {
+            delay(HEARTBEAT_TIMEOUT)
+
+            // 🛑 TIMEOUT REACHED! Connection is effectively dead.
+            Log.e("BluetoothService", "Heartbeat Timeout! Device disconnected suddenly.")
+
+            // Manually trigger the disconnect logic
+            userRepository.updateConnectionStatus("Disconnected")
+
+            // Optional: Notify user
+            sendAlertNotification("Connection Lost: Device not responding.")
+
+            // Close the ghost connection
+            bluetoothGatt?.close()
+            bluetoothGatt = null
+        }
+    }
+
     private fun createAlertNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = "rs_link_alerts"
@@ -327,10 +357,18 @@ class BluetoothLeService : Service() {
                         if(crashData.contains("Manual Alert", ignoreCase = true)){
                             smsBody = "SOS! $myName just activated the manual alert at $currentTime.\n" + "Location Code: $plusCode\n" +
                                     "Search this code on Maps. Contact him to update his status"
+                            userRepository.logCrashEvent(
+                                message = "Manual Alert",
+                                location = plusCode
+                            )
                         }
                         else if(crashData.contains("Crash Confirmed", ignoreCase = true)){
                             smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.\n" + "Location Code: $plusCode\n" +
                                     "Search this code on Maps."
+                            userRepository.logCrashEvent(
+                                message = "Confirmed Crash",
+                                location = plusCode
+                            )
                         }
 //                        else if(crashData.contains("Confirmed Accident", ignoreCase = true)){
 //                            smsBody = "RS-Link detected $myName had a crash at $currentTime.\n" + "Location Code: $plusCode\n" +
@@ -339,6 +377,10 @@ class BluetoothLeService : Service() {
 
                     }
                     else{
+                        userRepository.logCrashEvent(
+                            message = "Confirmed Crash - Unknown Location",
+                            location = "N/A"
+                        )
                         smsBody = "SOS! RS-Link detected $myName had a crash at $currentTime.. GPS Unavailable."
                     }
                 } catch (e: Exception) {

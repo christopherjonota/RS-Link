@@ -1,5 +1,6 @@
 package com.example.rs_link.data.repository
 import com.example.rs_link.data.model.Contact
+import com.example.rs_link.data.model.CrashEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.rs_link.data.model.User
@@ -61,5 +62,7 @@ interface UserRepository {
 
     suspend fun sendPasswordResetEmail(email: String)
 
+    suspend fun logCrashEvent(message: String, location: String)
+    fun getCrashHistory(): Flow<List<CrashEvent>>
 
 }

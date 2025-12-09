@@ -9,6 +9,7 @@ const long SHUTDOWN_HOLD_TIME = 3000; // 3 seconds
 unsigned long buttonPressTime = 0;
 bool isShuttingDown = false;
 
+
 void power_setup(){
 
   // Set the LATCH_PIN as an output and set it HIGH immediately
@@ -79,7 +80,7 @@ void power_loop(){
 
   if (isShuttingDown) {
     return;
-  }1
+  }
  // Read the current state of the button
   int buttonState = digitalRead(POWER_BUTTON_PIN);
 
